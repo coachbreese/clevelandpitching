@@ -1,8 +1,8 @@
-// Warriors Pitching offline helper.
+// Pitching app offline helper.
 // Pages and plan files always try the network first, so athletes get your newest version
 // whenever they have signal, and fall back to the saved copy when they don't.
-const CACHE = 'warriors-v5';
-const CORE = ['./', './index.html', './faq.js', './manifest.webmanifest',
+const CACHE = 'pitching-v8';
+const CORE = ['./', './index.html', './faq.js', './team.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

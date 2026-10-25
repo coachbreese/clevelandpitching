@@ -1,4 +1,4 @@
-// Ask Coach answers. Every answer comes from the Cleveland Warriors off-season plan.
+// Ask Coach answers. Every answer comes from the off-season plan.
 // To add a question: copy one block, change q / k / a, and keep the commas.
 // q = the question, k = extra words athletes might type, a = the answer, tab = which tab has more detail.
 window.COACH_FAQ = [
