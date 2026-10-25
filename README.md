@@ -4,7 +4,7 @@ Files for the GitHub Pages site. Upload everything in this folder, including the
 
 | File | What it does |
 |---|---|
-| `index.html` | The whole plan: Phases, Strength, Arm Care, Throwing, Nutrition and Ask Coach |
+| `index.html` | The whole plan: Phases, Calendar, Strength, Arm Care, Throwing, Nutrition and Ask Coach |
 | `faq.js` | The Ask Coach questions and answers. Edit this to add or change answers |
 | `manifest.webmanifest` | App name, colors and icons, so phones can install it |
 | `sw.js` | Lets the app open with no signal and pick up your updates automatically |
@@ -30,6 +30,6 @@ Open `faq.js` on GitHub, click the pencil icon, and copy any block that looks li
   a: "The answer. Use **double stars** for bold and \n for a new line." },
 ```
 
-`tab` can be `overview`, `training`, `armcare`, `throwing` or `nutrition`. Click **Commit changes** when done.
+`tab` can be `overview`, `calendar`, `training`, `armcare`, `throwing` or `nutrition`. Click **Commit changes** when done.
 
 Questions that don't match an answer, and anything that sounds like pain or injury, open an email to coachjbreese@gmail.com.

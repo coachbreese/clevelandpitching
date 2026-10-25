@@ -104,7 +104,10 @@
             <div class="max-w-7xl mx-auto gutter">
                 <div class="flex overflow-x-auto hide-scrollbar space-x-2 py-2">
                     <button onclick="switchTab('overview')" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-colors bg-cleveland-gold text-cleveland-darkGreen shadow" data-target="overview">
-                        <i class="fa-solid fa-calendar-days mr-2"></i>Phases
+                        <i class="fa-solid fa-map mr-2"></i>Phases
+                    </button>
+                    <button onclick="switchTab('calendar')" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-white hover:bg-white/10" data-target="calendar">
+                        <i class="fa-solid fa-calendar-alt mr-2"></i>Calendar
                     </button>
                     <button onclick="switchTab('training')" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-white hover:bg-white/10" data-target="training">
                         <i class="fa-solid fa-dumbbell mr-2"></i>Strength
@@ -223,80 +226,65 @@
                 </div>
             </div>
 
-            <!-- Sample Weekly Schedules -->
-            <div class="mt-12">
-                <div class="mb-6 flex items-center">
-                    <i class="fa-solid fa-calendar-week text-2xl text-cleveland-gold mr-3"></i>
-                    <h2 class="text-2xl font-bold text-cleveland-green border-b-4 border-cleveland-gold inline-block pb-1">Sample 7-Day Schedules</h2>
-                </div>
-                
-                <!-- Phase 1 Schedule -->
-                <div class="mb-8 bg-white rounded-xl shadow-md overflow-hidden border-2 border-gray-200">
-                    <div class="bg-gray-100 p-3 flex justify-between items-center border-b border-gray-200">
-                        <h3 class="font-bold text-gray-700">Phase 1 <span class="font-normal text-sm">(Weeks 1-4)</span></h3>
-                        <span class="text-xs font-bold bg-white border border-gray-200 px-2 py-1 rounded text-gray-600">Rest & Foundation</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-px bg-gray-200">
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Monday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Lower Body Lift</li><li>Arm Care (Bands)</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Tuesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li>Mobility Work</li><li>Core Routine</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Wednesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Upper Body Lift</li><li>Arm Care</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Thursday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="text-blue-600 font-semibold">Active Recovery</li><li>Light Cardio/Yoga</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Friday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Total Body Lift</li><li>Single Leg Focus</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Saturday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li>Arm Care</li><li>Med Ball Core</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Sunday</div><div class="p-3 text-xs text-gray-600 flex-grow flex items-center justify-center"><span class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">Rest / Off</span></div></div>
-                    </div>
-                </div>
+            <div class="mt-8 bg-cleveland-lightGreen border border-cleveland-green p-4 rounded-xl text-center shadow-sm">
+                <p class="font-bold text-cleveland-darkGreen text-lg"><i class="fa-solid fa-arrow-right mr-2"></i>Head to the <button class="bg-cleveland-gold text-cleveland-darkGreen px-2 py-1 rounded mx-1 hover:bg-yellow-500 transition-colors shadow" onclick="switchTab('calendar')">Calendar Tab</button> to view your complete daily schedule for all 16 weeks.</p>
+            </div>
+        </section>
 
-                <!-- Phase 2 Schedule -->
-                <div class="mb-8 bg-white rounded-xl shadow-md overflow-hidden border-2 border-cleveland-lightGreen">
-                    <div class="bg-cleveland-lightGreen p-3 flex justify-between items-center border-b border-cleveland-green/20">
-                        <h3 class="font-bold text-cleveland-darkGreen">Phase 2 <span class="font-normal text-sm">(Weeks 5-8)</span></h3>
-                        <span class="text-xs font-bold bg-white px-2 py-1 rounded text-cleveland-green shadow-sm">Strength & Light Catch</span>
+        <!-- CALENDAR TAB -->
+        <section id="calendar" class="tab-content">
+            <div class="mb-8 bg-white p-6 rounded-xl shadow-md border-l-4 border-cleveland-gold">
+                <h2 class="text-3xl font-bold text-cleveland-green mb-2 border-b-4 border-cleveland-gold inline-block pb-1">16-Week Master Calendar</h2>
+                <p class="text-gray-600 mt-2">Select a week below to view your comprehensive daily schedule encompassing lifting, throwing, arm care, and nutrition.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-4 md:p-6 mb-8 border border-gray-100">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Phase 1 -->
+                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <div class="text-xs font-bold text-gray-500 uppercase mb-2 text-center border-b pb-1">Phase 1: Rest</div>
+                        <div class="grid grid-cols-4 gap-1">
+                            <button onclick="renderWeek(1)" id="btn-wk-1" class="wk-btn py-1.5 rounded bg-white border border-gray-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">1</button>
+                            <button onclick="renderWeek(2)" id="btn-wk-2" class="wk-btn py-1.5 rounded bg-white border border-gray-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">2</button>
+                            <button onclick="renderWeek(3)" id="btn-wk-3" class="wk-btn py-1.5 rounded bg-white border border-gray-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">3</button>
+                            <button onclick="renderWeek(4)" id="btn-wk-4" class="wk-btn py-1.5 rounded bg-white border border-gray-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">4</button>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-px bg-gray-200">
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Monday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Lower Body Lift</li><li>Arm Care</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-blue-50 text-center py-1.5 font-bold text-blue-800 text-xs border-b border-blue-100">Tuesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-blue-600">Light Catch (60-90ft)</li><li>Mobility Work</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Wednesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Upper Body Lift</li><li>Core Routine</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Thursday</div><div class="p-3 text-xs text-gray-600 flex-grow flex items-center justify-center"><span class="bg-blue-50 text-blue-600 px-3 py-1 rounded font-bold">Active Recovery</span></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Friday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Total Body Lift</li><li>Arm Care</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-blue-50 text-center py-1.5 font-bold text-blue-800 text-xs border-b border-blue-100">Saturday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-blue-600">Light Catch (60-90ft)</li><li>Med Balls</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Sunday</div><div class="p-3 text-xs text-gray-600 flex-grow flex items-center justify-center"><span class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">Rest / Off</span></div></div>
+                    <!-- Phase 2 -->
+                    <div class="bg-cleveland-lightGreen/30 rounded-lg p-3 border border-cleveland-green/20">
+                        <div class="text-xs font-bold text-cleveland-darkGreen uppercase mb-2 text-center border-b border-cleveland-green/20 pb-1">Phase 2: Catch</div>
+                        <div class="grid grid-cols-4 gap-1">
+                            <button onclick="renderWeek(5)" id="btn-wk-5" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/20 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">5</button>
+                            <button onclick="renderWeek(6)" id="btn-wk-6" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/20 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">6</button>
+                            <button onclick="renderWeek(7)" id="btn-wk-7" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/20 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">7</button>
+                            <button onclick="renderWeek(8)" id="btn-wk-8" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/20 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">8</button>
+                        </div>
+                    </div>
+                    <!-- Phase 3 -->
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                        <div class="text-xs font-bold text-yellow-800 uppercase mb-2 text-center border-b border-yellow-200 pb-1">Phase 3: Long Toss</div>
+                        <div class="grid grid-cols-4 gap-1">
+                            <button onclick="renderWeek(9)" id="btn-wk-9" class="wk-btn py-1.5 rounded bg-white border border-yellow-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">9</button>
+                            <button onclick="renderWeek(10)" id="btn-wk-10" class="wk-btn py-1.5 rounded bg-white border border-yellow-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">10</button>
+                            <button onclick="renderWeek(11)" id="btn-wk-11" class="wk-btn py-1.5 rounded bg-white border border-yellow-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">11</button>
+                            <button onclick="renderWeek(12)" id="btn-wk-12" class="wk-btn py-1.5 rounded bg-white border border-yellow-200 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">12</button>
+                        </div>
+                    </div>
+                    <!-- Phase 4 -->
+                    <div class="bg-cleveland-green/10 rounded-lg p-3 border border-cleveland-green/40">
+                        <div class="text-xs font-bold text-cleveland-green uppercase mb-2 text-center border-b border-cleveland-green/30 pb-1">Phase 4: Bullpens</div>
+                        <div class="grid grid-cols-4 gap-1">
+                            <button onclick="renderWeek(13)" id="btn-wk-13" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/40 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">13</button>
+                            <button onclick="renderWeek(14)" id="btn-wk-14" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/40 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">14</button>
+                            <button onclick="renderWeek(15)" id="btn-wk-15" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/40 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">15</button>
+                            <button onclick="renderWeek(16)" id="btn-wk-16" class="wk-btn py-1.5 rounded bg-white border border-cleveland-green/40 text-gray-700 hover:bg-cleveland-green hover:text-white hover:border-cleveland-green transition-all font-bold text-sm shadow-sm">16</button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Phase 3 Schedule -->
-                <div class="mb-8 bg-white rounded-xl shadow-md overflow-hidden border-2 border-cleveland-gold/50">
-                    <div class="bg-cleveland-gold/20 p-3 flex justify-between items-center border-b border-cleveland-gold/30">
-                        <h3 class="font-bold text-yellow-900">Phase 3 <span class="font-normal text-sm">(Weeks 9-12)</span></h3>
-                        <span class="text-xs font-bold bg-white border border-cleveland-gold/30 px-2 py-1 rounded text-yellow-800 shadow-sm">Long Toss & Ramp Up</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-px bg-gray-200">
-                        <div class="bg-white flex flex-col"><div class="bg-yellow-50 text-center py-1.5 font-bold text-yellow-800 text-xs border-b border-yellow-100">Monday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-yellow-700">Long Toss (Ramp Up)</li><li class="font-semibold text-cleveland-darkGreen">Lower Body Lift</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Tuesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li>Arm Care</li><li>Mobility & Core</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-yellow-50 text-center py-1.5 font-bold text-yellow-800 text-xs border-b border-yellow-100">Wednesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-yellow-700">Long Toss (Pull downs)</li><li class="font-semibold text-cleveland-darkGreen">Upper Body Lift</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Thursday</div><div class="p-3 text-xs text-gray-600 flex-grow flex items-center justify-center"><span class="bg-blue-50 text-blue-600 px-3 py-1 rounded font-bold">Active Recovery</span></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-yellow-50 text-center py-1.5 font-bold text-yellow-800 text-xs border-b border-yellow-100">Friday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-yellow-700">Med Catch (120ft)</li><li class="font-semibold text-cleveland-darkGreen">Total Body Lift</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Saturday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li>Arm Care</li><li>Med Balls</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Sunday</div><div class="p-3 text-xs text-gray-600 flex-grow flex items-center justify-center"><span class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">Rest / Off</span></div></div>
-                    </div>
-                </div>
-
-                <!-- Phase 4 Schedule -->
-                <div class="mb-8 bg-white rounded-xl shadow-md overflow-hidden border-2 border-cleveland-green">
-                    <div class="bg-cleveland-green p-3 flex justify-between items-center">
-                        <h3 class="font-bold text-white">Phase 4 <span class="font-normal text-sm opacity-80">(Weeks 13-16)</span></h3>
-                        <span class="text-xs font-bold bg-cleveland-gold px-2 py-1 rounded text-cleveland-darkGreen shadow-sm">Mound Bullpens</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-px bg-gray-200">
-                        <div class="bg-white flex flex-col"><div class="bg-green-50 text-center py-1.5 font-bold text-green-800 text-xs border-b border-green-100">Monday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-bold text-red-600">Bullpen (75-85%)</li><li>Arm Care</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Tuesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Light Lower Lift</li><li>Core Routine</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-green-50 text-center py-1.5 font-bold text-green-800 text-xs border-b border-green-100">Wednesday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-green-700">Flat Ground Work</li><li>Arm Care</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-green-50 text-center py-1.5 font-bold text-green-800 text-xs border-b border-green-100">Thursday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-bold text-red-600">Bullpen (Game Sim)</li><li>Arm Care</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Friday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-cleveland-darkGreen">Light Upper Lift</li><li>Mobility Work</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-blue-50 text-center py-1.5 font-bold text-blue-800 text-xs border-b border-blue-100">Saturday</div><div class="p-3 text-xs text-gray-600 flex-grow"><ul class="list-disc pl-3 space-y-1"><li class="font-semibold text-blue-600">Light Catch</li><li>Pre-game Routine</li></ul></div></div>
-                        <div class="bg-white flex flex-col"><div class="bg-gray-50 text-center py-1.5 font-bold text-gray-600 text-xs border-b border-gray-100">Sunday</div><div class="p-3 text-xs text-gray-600 flex-grow flex items-center justify-center"><span class="bg-red-50 text-red-600 px-3 py-1 rounded font-bold">Rest / Off</span></div></div>
-                    </div>
-                </div>
+            <div id="calendar-display" class="transition-opacity duration-300">
+                <!-- Dynamically populated by JS -->
             </div>
         </section>
 
@@ -348,25 +336,62 @@
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <div class="bg-cleveland-green/10 p-2 rounded mr-3 text-cleveland-green"><i class="fa-solid fa-check"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Bulgarian Split Squats</strong>
                                 <span class="text-sm text-gray-600">3 sets of 8-10 reps per leg</span>
-                                <p class="text-xs text-gray-500 mt-1 italic"><i class="fa-solid fa-image text-gray-400 mr-1"></i>Visual: Back foot elevated on bench, drop back knee towards floor.</p>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <!-- Bench -->
+                                    <rect x="70" y="40" width="20" height="15" fill="#e5e7eb" rx="2" />
+                                    <!-- Person -->
+                                    <circle cx="45" cy="15" r="5" fill="#006400" /> <!-- Head -->
+                                    <line x1="45" y1="20" x2="45" y2="35" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Torso -->
+                                    <line x1="45" y1="35" x2="35" y2="45" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Front Thigh -->
+                                    <line x1="35" y1="45" x2="35" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Front Calf -->
+                                    <line x1="45" y1="35" x2="60" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Back Thigh -->
+                                    <line x1="60" y1="40" x2="75" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Back Calf -->
+                                    <!-- Arrow -->
+                                    <path d="M 25 25 L 25 45 M 20 40 L 25 45 L 30 40" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-cleveland-green/10 p-2 rounded mr-3 text-cleveland-green"><i class="fa-solid fa-check"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Single-Leg RDLs</strong>
                                 <span class="text-sm text-gray-600">3 sets of 8 reps per leg</span>
-                                <p class="text-xs text-gray-500 mt-1 italic"><i class="fa-solid fa-image text-gray-400 mr-1"></i>Visual: Hinge at hips, one leg extends straight back, slight bend in plant knee.</p>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <!-- Person -->
+                                    <circle cx="30" cy="20" r="5" fill="#006400" /> <!-- Head -->
+                                    <line x1="30" y1="25" x2="50" y2="25" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Torso (hinged) -->
+                                    <line x1="50" y1="25" x2="45" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Plant Leg -->
+                                    <line x1="50" y1="25" x2="75" y2="25" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Back Leg -->
+                                    <line x1="40" y1="25" x2="40" y2="45" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Arm -->
+                                    <!-- Dumbbell -->
+                                    <rect x="37" y="45" width="6" height="4" fill="#6b7280" rx="1" />
+                                    <!-- Arrow -->
+                                    <path d="M 20 15 A 15 15 0 0 0 20 35" stroke="#FFD700" stroke-width="2" fill="none" stroke-dasharray="2,2"/>
+                                    <polygon points="20,35 17,30 23,30" fill="#FFD700" />
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-cleveland-green/10 p-2 rounded mr-3 text-cleveland-green"><i class="fa-solid fa-check"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Reverse & Lateral Lunges</strong>
                                 <span class="text-sm text-gray-600">3 sets of 10 reps (Reverse) / 8 reps (Lateral) per leg</span>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <circle cx="40" cy="15" r="5" fill="#006400" />
+                                    <line x1="40" y1="20" x2="40" y2="35" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="40" y1="35" x2="30" y2="35" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="30" y1="35" x2="30" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="40" y1="35" x2="60" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="60" y1="55" x2="75" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <path d="M 65 30 A 15 15 0 0 0 75 45" stroke="#FFD700" stroke-width="2" fill="none" stroke-dasharray="2,2"/>
+                                    <polygon points="75,45 78,40 72,40" fill="#FFD700" />
+                                </svg>
                             </div>
                         </li>
                     </ul>
@@ -381,19 +406,42 @@
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <div class="bg-cleveland-green/10 p-2 rounded mr-3 text-cleveland-green"><i class="fa-solid fa-dumbbell"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Trap Bar Deadlifts</strong>
                                 <span class="text-sm text-gray-600 block">Varsity: Focus on power</span>
                                 <span class="text-sm text-gray-600 block">Freshmen: Learn form with Kettlebells</span>
-                                <p class="text-xs text-gray-500 mt-1 italic"><i class="fa-solid fa-image text-gray-400 mr-1"></i>Visual: Stand inside hex bar, neutral spine, drive through heels.</p>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <!-- Person Squatting -->
+                                    <circle cx="50" cy="25" r="5" fill="#006400" />
+                                    <line x1="50" y1="30" x2="40" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Torso leaned -->
+                                    <line x1="40" y1="40" x2="50" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Leg -->
+                                    <line x1="45" y1="32" x2="45" y2="48" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Arm -->
+                                    <!-- Trap Bar (Hexagon shape around feet) -->
+                                    <polygon points="35,50 65,50 70,45 65,40 35,40 30,45" stroke="#6b7280" stroke-width="2" fill="none" />
+                                    <rect x="42" y="47" width="6" height="2" fill="#6b7280" /> <!-- handle -->
+                                    <!-- Arrow up -->
+                                    <path d="M 75 45 L 75 25 M 70 30 L 75 25 L 80 30" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-cleveland-green/10 p-2 rounded mr-3 text-cleveland-green"><i class="fa-solid fa-dumbbell"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Squat Variations</strong>
                                 <span class="text-sm text-gray-600 block">Varsity: Front Squats</span>
                                 <span class="text-sm text-gray-600 block">Freshmen: Goblet Squats</span>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <circle cx="50" cy="15" r="5" fill="#006400" />
+                                    <line x1="50" y1="20" x2="45" y2="35" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="45" y1="35" x2="55" y2="50" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="55" y1="50" x2="55" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="50" y1="22" x2="55" y2="28" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <rect x="52" y="25" width="6" height="8" fill="#6b7280" rx="1" />
+                                    <path d="M 30 20 L 30 45 M 25 25 L 30 20 L 35 25" stroke="#FFD700" stroke-width="2" fill="none" />
+                                    <path d="M 30 45 L 25 40 M 30 45 L 35 40" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                     </ul>
@@ -408,25 +456,67 @@
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <div class="bg-yellow-50 p-2 rounded mr-3 text-yellow-600"><i class="fa-solid fa-baseball"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Med Ball Rotational Throws</strong>
                                 <span class="text-sm text-gray-600">3 sets of 8 reps per side</span>
-                                <p class="text-xs text-gray-500 mt-1 italic"><i class="fa-solid fa-image text-gray-400 mr-1"></i>Visual: Explosive hip rotation throwing ball against a wall.</p>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <!-- Wall -->
+                                    <line x1="85" y1="10" x2="85" y2="55" stroke="#e5e7eb" stroke-width="5" stroke-linecap="round" />
+                                    <!-- Person Twisting -->
+                                    <circle cx="35" cy="20" r="5" fill="#006400" />
+                                    <line x1="35" y1="25" x2="35" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="35" y1="40" x2="25" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="35" y1="40" x2="45" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <!-- Arms throwing -->
+                                    <line x1="35" y1="28" x2="55" y2="28" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <!-- Med ball -->
+                                    <circle cx="60" cy="28" r="4" fill="#FFD700" />
+                                    <!-- Motion lines -->
+                                    <path d="M 65 28 L 75 28 M 70 25 L 75 28 L 70 31" stroke="#FFD700" stroke-width="2" fill="none" stroke-dasharray="2,2"/>
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-yellow-50 p-2 rounded mr-3 text-yellow-600"><i class="fa-solid fa-baseball"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Pallof Presses</strong>
                                 <span class="text-sm text-gray-600">3 sets of 10 reps per side</span>
-                                <p class="text-xs text-gray-500 mt-1 italic"><i class="fa-solid fa-image text-gray-400 mr-1"></i>Visual: Press cable/band straight out from chest, resisting rotation.</p>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <!-- Cable Machine Anchor -->
+                                    <rect x="10" y="10" width="5" height="45" fill="#e5e7eb" rx="1" />
+                                    <!-- Cable -->
+                                    <line x1="15" y1="30" x2="45" y2="30" stroke="#6b7280" stroke-width="1.5" />
+                                    <!-- Person -->
+                                    <circle cx="50" cy="15" r="5" fill="#006400" />
+                                    <line x1="50" y1="20" x2="50" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="50" y1="40" x2="45" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="50" y1="40" x2="55" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <!-- Arms extended -->
+                                    <line x1="50" y1="25" x2="45" y2="30" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="45" y1="30" x2="65" y2="30" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <!-- Arrow -->
+                                    <path d="M 50 35 L 65 35 M 60 32 L 65 35 L 60 38" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-yellow-50 p-2 rounded mr-3 text-yellow-600"><i class="fa-solid fa-baseball"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Planks & Side Planks</strong>
                                 <span class="text-sm text-gray-600">Hold for 30-60 seconds</span>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <circle cx="25" cy="45" r="4" fill="#006400" />
+                                    <line x1="25" y1="45" x2="60" y2="45" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Body -->
+                                    <line x1="60" y1="45" x2="80" y2="45" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Legs -->
+                                    <line x1="25" y1="45" x2="25" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Arms -->
+                                    <line x1="80" y1="45" x2="85" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Feet -->
+                                    <!-- Floor -->
+                                    <line x1="10" y1="55" x2="90" y2="55" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M 50 40 L 50 30 M 45 35 L 50 30 L 55 35" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                     </ul>
@@ -441,23 +531,57 @@
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <div class="bg-gray-100 p-2 rounded mr-3 text-gray-600"><i class="fa-solid fa-arrow-up"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Push-ups</strong>
                                 <span class="text-sm text-gray-600">Progress to weighted or plyo for Varsity</span>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <circle cx="25" cy="35" r="4" fill="#006400" />
+                                    <line x1="25" y1="35" x2="60" y2="25" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Body -->
+                                    <line x1="60" y1="25" x2="85" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Legs -->
+                                    <line x1="25" y1="35" x2="25" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Arms -->
+                                    <!-- Floor -->
+                                    <line x1="10" y1="55" x2="90" y2="55" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M 50 20 L 50 10 M 45 15 L 50 10 L 55 15" stroke="#FFD700" stroke-width="2" fill="none" />
+                                    <path d="M 50 20 L 45 25 M 50 20 L 55 25" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-gray-100 p-2 rounded mr-3 text-gray-600"><i class="fa-solid fa-arrow-down"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Dumbbell Rows</strong>
                                 <span class="text-sm text-gray-600">3 sets of 10 reps</span>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <rect x="20" y="40" width="30" height="10" fill="#e5e7eb" rx="2" /> <!-- Bench -->
+                                    <circle cx="25" cy="20" r="4" fill="#006400" /> <!-- Head -->
+                                    <line x1="25" y1="25" x2="55" y2="25" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Back -->
+                                    <line x1="25" y1="25" x2="25" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Plant Arm -->
+                                    <line x1="55" y1="25" x2="55" y2="40" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Knee -->
+                                    <line x1="50" y1="25" x2="45" y2="35" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Row Arm bent -->
+                                    <line x1="45" y1="35" x2="45" y2="45" stroke="#006400" stroke-width="3" stroke-linecap="round" />
+                                    <rect x="42" y="45" width="6" height="4" fill="#6b7280" rx="1" /> <!-- DB -->
+                                    <path d="M 65 45 L 65 30 M 60 35 L 65 30 L 70 35" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                         <li class="flex items-start">
                             <div class="bg-gray-100 p-2 rounded mr-3 text-gray-600"><i class="fa-solid fa-arrows-up-to-line"></i></div>
-                            <div>
+                            <div class="w-full">
                                 <strong class="block text-gray-800">Pull-ups / Chin-ups</strong>
                                 <span class="text-sm text-gray-600">Use assist bands for Freshmen if needed</span>
+                                <div class="mt-2 text-xs text-gray-500 font-medium">Visual:</div>
+                                <svg viewBox="0 0 100 60" class="w-full max-w-[200px] h-24 bg-gray-50 rounded border border-gray-200 mt-1 p-2 shadow-inner">
+                                    <line x1="20" y1="15" x2="80" y2="15" stroke="#6b7280" stroke-width="3" stroke-linecap="round" /> <!-- Bar -->
+                                    <circle cx="50" cy="25" r="4" fill="#006400" />
+                                    <line x1="50" y1="30" x2="50" y2="45" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Body -->
+                                    <line x1="50" y1="30" x2="35" y2="15" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Arm L -->
+                                    <line x1="50" y1="30" x2="65" y2="15" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Arm R -->
+                                    <line x1="50" y1="45" x2="45" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Leg L -->
+                                    <line x1="50" y1="45" x2="55" y2="55" stroke="#006400" stroke-width="3" stroke-linecap="round" /> <!-- Leg R -->
+                                    <path d="M 85 45 L 85 25 M 80 30 L 85 25 L 90 30" stroke="#FFD700" stroke-width="2" fill="none" />
+                                </svg>
                             </div>
                         </li>
                     </ul>
@@ -1008,12 +1132,158 @@
             }
         }
 
+        const calendarData = {};
+        
+        // Generate Phase 1 (Weeks 1-4)
+        for(let i=1; i<=4; i++) {
+            calendarData[i] = {
+                title: `Week ${i}: Rest & Foundation`,
+                phase: 'Phase 1',
+                theme: 'bg-gray-100 border-gray-300 text-gray-800',
+                badge: 'bg-white text-gray-600 border-gray-200',
+                days: [
+                    { day: 'Monday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Lower Body Lift</span>', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care (Bands)', '<i class="fa-solid fa-utensils text-xs text-cleveland-gold w-4"></i> Mass Gain Protocol'] },
+                    { day: 'Tuesday', tasks: ['<span class="font-bold text-gray-700 text-sm border-b pb-1 block mb-1">Mobility & Core</span>', '<i class="fa-solid fa-person-walking text-xs text-blue-500 w-4"></i> Dynamic Warmup', '<i class="fa-solid fa-droplet text-xs text-blue-400 w-4"></i> Hydration Focus'] },
+                    { day: 'Wednesday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Upper Body Lift</span>', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care', '<i class="fa-solid fa-utensils text-xs text-cleveland-gold w-4"></i> High Protein Day'] },
+                    { day: 'Thursday', tasks: ['<span class="font-bold text-blue-600 text-sm border-b pb-1 block mb-1">Active Recovery</span>', '<i class="fa-solid fa-spa text-xs text-green-500 w-4"></i> Yoga/Light Cardio', '<i class="fa-solid fa-bed text-xs text-indigo-500 w-4"></i> Extra Sleep'] },
+                    { day: 'Friday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Total Body Lift</span>', '<i class="fa-solid fa-shoe-prints text-xs text-gray-500 w-4"></i> Single Leg Focus', '<i class="fa-solid fa-utensils text-xs text-cleveland-gold w-4"></i> Mass Gain Protocol'] },
+                    { day: 'Saturday', tasks: ['<span class="font-bold text-gray-700 text-sm border-b pb-1 block mb-1">Core & Arm Care</span>', '<i class="fa-solid fa-baseball text-xs text-yellow-600 w-4"></i> Med Ball Throws', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> J-Bands'] },
+                    { day: 'Sunday', tasks: ['<span class="font-bold text-red-600 text-sm border-b pb-1 block mb-1">Rest / Off</span>', '<i class="fa-solid fa-ban text-xs text-red-500 w-4"></i> No Baseball Activity', '<i class="fa-solid fa-clipboard-list text-xs text-gray-500 w-4"></i> Meal Prep'] }
+                ]
+            };
+        }
+
+        // Generate Phase 2 (Weeks 5-8)
+        for(let i=5; i<=8; i++) {
+            calendarData[i] = {
+                title: `Week ${i}: Strength & Light Catch`,
+                phase: 'Phase 2',
+                theme: 'bg-cleveland-lightGreen border-cleveland-green/30 text-cleveland-darkGreen',
+                badge: 'bg-white text-cleveland-green',
+                days: [
+                    { day: 'Monday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Lower Body Lift</span>', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care', '<i class="fa-solid fa-utensils text-xs text-cleveland-gold w-4"></i> High Calorie Day'] },
+                    { day: 'Tuesday', tasks: ['<span class="font-bold text-blue-700 text-sm border-b pb-1 block mb-1">Light Catch</span>', '<i class="fa-solid fa-ruler-horizontal text-xs text-gray-500 w-4"></i> 60-90ft Max', '<i class="fa-solid fa-gauge text-xs text-blue-500 w-4"></i> 50% Intensity'] },
+                    { day: 'Wednesday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Upper Body Lift</span>', '<i class="fa-solid fa-arrows-rotate text-xs text-yellow-600 w-4"></i> Core Routine', '<i class="fa-solid fa-utensils text-xs text-cleveland-gold w-4"></i> Protein Focus'] },
+                    { day: 'Thursday', tasks: ['<span class="font-bold text-blue-600 text-sm border-b pb-1 block mb-1">Active Recovery</span>', '<i class="fa-solid fa-person-walking text-xs text-gray-500 w-4"></i> Light Cardio'] },
+                    { day: 'Friday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Total Body Lift</span>', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care', '<i class="fa-solid fa-utensils text-xs text-cleveland-gold w-4"></i> Mass Gain'] },
+                    { day: 'Saturday', tasks: ['<span class="font-bold text-blue-700 text-sm border-b pb-1 block mb-1">Light Catch</span>', '<i class="fa-solid fa-ruler-horizontal text-xs text-gray-500 w-4"></i> 60-90ft Max', '<i class="fa-solid fa-baseball text-xs text-yellow-600 w-4"></i> Med Balls'] },
+                    { day: 'Sunday', tasks: ['<span class="font-bold text-red-600 text-sm border-b pb-1 block mb-1">Rest / Off</span>', '<i class="fa-solid fa-battery-full text-xs text-green-500 w-4"></i> Total Recovery'] }
+                ]
+            };
+        }
+
+        // Generate Phase 3 (Weeks 9-12)
+        for(let i=9; i<=12; i++) {
+            let distance = i === 9 ? "90-120ft" : (i === 10 ? "120ft" : (i === 11 ? "120-150ft" : "150ft+"));
+            calendarData[i] = {
+                title: `Week ${i}: Long Toss Ramp Up`,
+                phase: 'Phase 3',
+                theme: 'bg-yellow-50 border-cleveland-gold/50 text-yellow-900',
+                badge: 'bg-white text-yellow-800 border-yellow-200',
+                days: [
+                    { day: 'Monday', tasks: [`<span class="font-bold text-yellow-700 text-sm border-b border-yellow-200 pb-1 block mb-1">Long Toss (${distance})</span>`, '<i class="fa-solid fa-dumbbell text-xs text-cleveland-green w-4"></i> Lower Body Lift', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care'] },
+                    { day: 'Tuesday', tasks: ['<span class="font-bold text-gray-700 text-sm border-b pb-1 block mb-1">Mobility & Core</span>', '<i class="fa-solid fa-person-walking text-xs text-blue-500 w-4"></i> Dynamic Warmup'] },
+                    { day: 'Wednesday', tasks: ['<span class="font-bold text-yellow-700 text-sm border-b border-yellow-200 pb-1 block mb-1">Long Toss</span>', '<i class="fa-solid fa-arrow-down text-xs text-red-500 w-4"></i> Pull Downs', '<i class="fa-solid fa-dumbbell text-xs text-cleveland-green w-4"></i> Upper Body Lift'] },
+                    { day: 'Thursday', tasks: ['<span class="font-bold text-blue-600 text-sm border-b pb-1 block mb-1">Active Recovery</span>', '<i class="fa-solid fa-spa text-xs text-green-500 w-4"></i> Light Stretch'] },
+                    { day: 'Friday', tasks: ['<span class="font-bold text-yellow-700 text-sm border-b border-yellow-200 pb-1 block mb-1">Med Catch (120ft)</span>', '<i class="fa-solid fa-dumbbell text-xs text-cleveland-green w-4"></i> Total Body Lift', '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care'] },
+                    { day: 'Saturday', tasks: ['<span class="font-bold text-gray-700 text-sm border-b pb-1 block mb-1">Core & Arm Care</span>', '<i class="fa-solid fa-baseball text-xs text-yellow-600 w-4"></i> Med Balls'] },
+                    { day: 'Sunday', tasks: ['<span class="font-bold text-red-600 text-sm border-b pb-1 block mb-1">Rest / Off</span>'] }
+                ]
+            };
+        }
+
+        // Generate Phase 4 (Weeks 13-16)
+        const phase4Details = {
+            13: { mon: 'Flat Ground (75%)', monSub: 'FB Command Focus', wed: 'Flat Ground Work', wedSub: 'Mechanics focus', thu: 'Flat Ground (75%)', thuSub: 'Game intensity rep' },
+            14: { mon: 'Mound Pen (20-25)', monSub: 'Fastballs Only', wed: 'Flat Ground Work', wedSub: 'Mechanics focus', thu: 'Mound Pen (20-25)', thuSub: 'Fastballs Only' },
+            15: { mon: 'Mound Pen (30-35)', monSub: 'Intro CH (85%)', wed: 'Flat Ground Work', wedSub: 'Off-speed grips', thu: 'Mound Pen (30-35)', thuSub: 'FB / CH mix' },
+            16: { mon: 'Mound Pen (40-45)', monSub: 'Intro BB (Varsity)', wed: 'Light Flat Ground', wedSub: 'Recovery focus', thu: 'Mound Pen (40-45)', thuSub: 'Game Simulation' }
+        };
+
+        for(let i=13; i<=16; i++) {
+            let p = phase4Details[i];
+            calendarData[i] = {
+                title: `Week ${i}: Mound Work & Bullpens`,
+                phase: 'Phase 4',
+                theme: 'bg-green-50 border-cleveland-green text-green-900',
+                badge: 'bg-cleveland-gold text-cleveland-darkGreen shadow-sm',
+                days: [
+                    { day: 'Monday', tasks: [`<span class="font-bold text-red-600 text-sm border-b border-red-200 pb-1 block mb-1">${p.mon}</span>`, `<i class="fa-solid fa-bullseye text-xs text-gray-500 w-4"></i> ${p.monSub}`, '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care'] },
+                    { day: 'Tuesday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Light Lower Lift</span>', '<i class="fa-solid fa-arrows-rotate text-xs text-yellow-600 w-4"></i> Core Routine'] },
+                    { day: 'Wednesday', tasks: [`<span class="font-bold text-green-700 text-sm border-b border-green-200 pb-1 block mb-1">${p.wed}</span>`, `<i class="fa-solid fa-wrench text-xs text-gray-500 w-4"></i> ${p.wedSub}`, '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care'] },
+                    { day: 'Thursday', tasks: [`<span class="font-bold text-red-600 text-sm border-b border-red-200 pb-1 block mb-1">${p.thu}</span>`, `<i class="fa-solid fa-video text-xs text-gray-500 w-4"></i> ${p.thuSub}`, '<i class="fa-solid fa-heart-pulse text-xs text-red-500 w-4"></i> Arm Care'] },
+                    { day: 'Friday', tasks: ['<span class="font-bold text-cleveland-darkGreen text-sm border-b pb-1 block mb-1">Light Upper Lift</span>', '<i class="fa-solid fa-person-walking text-xs text-blue-500 w-4"></i> Mobility Work'] },
+                    { day: 'Saturday', tasks: ['<span class="font-bold text-blue-600 text-sm border-b pb-1 block mb-1">Light Catch</span>', '<i class="fa-solid fa-stopwatch text-xs text-gray-500 w-4"></i> Pre-game Routine'] },
+                    { day: 'Sunday', tasks: ['<span class="font-bold text-red-600 text-sm border-b pb-1 block mb-1">Rest / Off</span>', '<i class="fa-solid fa-battery-full text-xs text-green-500 w-4"></i> Final Prep'] }
+                ]
+            };
+        }
+
+        function renderWeek(weekNum) {
+            // Update buttons styling
+            document.querySelectorAll('.wk-btn').forEach(btn => {
+                btn.classList.remove('bg-cleveland-green', 'text-white', 'border-cleveland-green');
+                btn.classList.add('bg-white', 'text-gray-700');
+            });
+            const activeBtn = document.getElementById(`btn-wk-${weekNum}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-gray-700');
+                activeBtn.classList.add('bg-cleveland-green', 'text-white', 'border-cleveland-green');
+            }
+
+            const data = calendarData[weekNum];
+            const display = document.getElementById('calendar-display');
+            
+            // Fade out, update, fade in
+            display.style.opacity = 0;
+            
+            setTimeout(() => {
+                let html = `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border-2 ${data.theme.split(' ')[1]}">
+                        <div class="${data.theme.split(' ')[0]} p-4 flex justify-between items-center border-b ${data.theme.split(' ')[1]}">
+                            <h3 class="font-bold text-lg md:text-xl ${data.theme.split(' ')[2]}"><i class="fa-solid fa-calendar-day mr-2 opacity-70"></i>${data.title}</h3>
+                            <span class="text-xs font-bold px-3 py-1 rounded-full ${data.badge} border">${data.phase}</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-px bg-gray-200">
+                `;
+
+                data.days.forEach(dayInfo => {
+                    // Weekend styling adjustments
+                    const isWeekend = dayInfo.day === 'Saturday' || dayInfo.day === 'Sunday';
+                    const bgClass = isWeekend ? 'bg-gray-50' : 'bg-white';
+                    
+                    html += `
+                        <div class="${bgClass} flex flex-col h-full">
+                            <div class="bg-gray-100 text-center py-2 font-bold text-gray-700 text-sm border-b border-gray-200 uppercase tracking-wider">${dayInfo.day}</div>
+                            <div class="p-4 text-xs text-gray-600 flex-grow">
+                                <ul class="space-y-2">
+                                    ${dayInfo.tasks.map(task => `<li class="flex items-center text-left leading-tight">${task}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+                
+                display.innerHTML = html;
+                display.style.opacity = 1;
+            }, 150);
+        }
+
+        // Initialize calendar with Week 1
+        renderWeek(1);
+
+
         // --- Ask Coach (answers from the plan, no AI, works offline) ---
         const COACH_EMAIL = 'coachjbreese@gmail.com';
         const chatForm = document.getElementById('ai-chat-form');
         const chatInput = document.getElementById('chat-input');
         const chatHistoryContainer = document.getElementById('chat-history');
-        const TAB_NAMES = { overview: 'Phases', training: 'Strength', armcare: 'Arm Care', throwing: 'Throwing', nutrition: 'Nutrition' };
+        const TAB_NAMES = { overview: 'Phases', calendar: 'Calendar', training: 'Strength', armcare: 'Arm Care', throwing: 'Throwing', nutrition: 'Nutrition' };
 
         function scrollToBottom() { chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight; }
         function escapeHtml(s) {
@@ -1114,19 +1384,50 @@
             if (!savedName) setTimeout(() => nameEl.focus({ preventScroll: true }), 50);
         }
 
+        // ---- calendar weeks ----
+        function weekIn(text) {
+            const m = String(text).toLowerCase().match(/\b(?:weeks?|wks?)\s*#?\s*(\d{1,2})\b/);
+            const n = m ? +m[1] : 0;
+            return n >= 1 && n <= 16 ? n : 0;
+        }
+        function openWeek(n) {
+            switchTab('calendar');
+            if (typeof renderWeek === 'function') renderWeek(n);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function weekSummary(n) {
+            const data = (typeof calendarData !== 'undefined') ? calendarData[n] : null;
+            if (!data) return '';
+            const strip = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.trim(); };
+            const rows = data.days.map(d => {
+                const items = d.tasks.map(strip).filter(Boolean);
+                return `<li><strong>${escapeHtml(d.day.slice(0, 3))}:</strong> ${escapeHtml(items.join(' · '))}</li>`;
+            }).join('');
+            return `<p><strong>${escapeHtml(data.title)}</strong> <span class="text-xs text-gray-500">(${escapeHtml(data.phase)})</span></p><ul class="mt-2 space-y-1">${rows}</ul>`;
+        }
+        const weekButton = n => `<button type="button" data-week="${n}" class="mt-3 inline-flex items-center gap-1 text-xs font-bold bg-cleveland-green text-white px-3 py-1.5 rounded hover:bg-cleveland-darkGreen"><i class="fa-solid fa-calendar-day"></i>Open Week ${n} in the Calendar</button>`;
+        const SCHEDULE_WORDS = /\b(schedule|calendar|plan|look like|looks like|what do i do|what am i doing|what's on|whats on|this week|today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
+
         function answer(question) {
             if (isInjury(question)) {
                 addMessage(formatAnswer("**If it's sharp pain, stop throwing now.** Soreness is okay; pain is not.\nTell Coach Breese or your athletic trainer today, and see a doctor if it doesn't go away. This app can't judge an injury."), false);
                 emailCard(question, 'Send this to Coach Breese so Coach knows what\'s going on:', 'Arm/Injury');
                 return;
             }
+            const wk = weekIn(question);
             const hits = findAnswers(question);
+            if (wk && (!hits.length || SCHEDULE_WORDS.test(question) || question.trim().split(/\s+/).length <= 3)) {
+                addMessage(weekSummary(wk) + weekButton(wk) +
+                    `<p class="mt-3 text-xs text-gray-500">Not what you asked? <button type="button" data-email="${escapeHtml(question)}" class="underline font-semibold text-cleveland-green">Send it to Coach Breese</button></p>`, false);
+                return;
+            }
             if (!hits.length) {
                 emailCard(question, "That one isn't covered in the off-season plan. Send it to Coach Breese and you'll get an answer.", 'Ask Coach');
                 return;
             }
             const top = hits[0].e.f;
             let html = formatAnswer(top.a);
+            if (wk) html += weekButton(wk) + ' ';
             if (top.tab && TAB_NAMES[top.tab]) html += `<button type="button" data-goto="${top.tab}" class="mt-3 text-xs font-bold text-cleveland-green underline">More on the ${TAB_NAMES[top.tab]} tab</button>`;
             const related = hits.slice(1);
             if (related.length) {
@@ -1150,6 +1451,8 @@
             if (chip) { ask(chip.dataset.ask); return; }
             const mail = e.target.closest('[data-email]');
             if (mail) { emailCard(mail.dataset.email, 'Add anything that helps explain it, then send:', 'Ask Coach'); return; }
+            const wb = e.target.closest('[data-week]');
+            if (wb) { openWeek(+wb.dataset.week); return; }
             const go = e.target.closest('[data-goto]');
             if (go) { switchTab(go.dataset.goto); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         });
@@ -1172,8 +1475,13 @@
         });
 
         // --- Deep links: open a tab from the link's #anchor ---
-        const hashMap = { phases: 'overview', overview: 'overview', strength: 'training', training: 'training', armcare: 'armcare', throwing: 'throwing', nutrition: 'nutrition', coach: 'coach-ai', ask: 'coach-ai', 'coach-ai': 'coach-ai' };
-        function openFromHash() { const t = hashMap[(location.hash || '').slice(1).toLowerCase()]; if (t) switchTab(t); }
+        const hashMap = { phases: 'overview', overview: 'overview', calendar: 'calendar', schedule: 'calendar', strength: 'training', training: 'training', armcare: 'armcare', throwing: 'throwing', nutrition: 'nutrition', coach: 'coach-ai', ask: 'coach-ai', 'coach-ai': 'coach-ai' };
+        function openFromHash() {
+            const h = (location.hash || '').slice(1).toLowerCase();
+            const w = h.match(/^week(\d{1,2})$/);
+            if (w && +w[1] >= 1 && +w[1] <= 16) { openWeek(+w[1]); return; }
+            const t = hashMap[h]; if (t) switchTab(t);
+        }
         openFromHash();
         window.addEventListener('hashchange', openFromHash);
         document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })));
