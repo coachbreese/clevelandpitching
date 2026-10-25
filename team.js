@@ -27,5 +27,5 @@ window.TEAM = {
 
   // Weekly check-ins: paste your Google Sheet web app link here (see tracking/SETUP.md).
   // Leave "" to hide check-ins.
-  trackingUrl: "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQyNivAa-9OdDiqSnh4KvbR4y0zLCo9VLgRPiKD_6wFcIfrcKA6Ey_AhoWayh3Wl8R52h3woIpWqSeOgXSJ1_pCAdUTwd8ovuF1G7i5uqwGv2m_jvGN93DH4NQruwHegrmADPWXoYJJsxQeM8zp4E1O1VG-wigD57iZ40OakqaMnZHswgpS_7dXOBKNOHo0Id8ROtotC4V9AfSCgQ4GJieUKC4PHZdUv0M9H5rmCw2MyvDejvS1699NxqI09qVXYwkUzsqEXfx2_DZ-u-mLO_ipVEPP7A&lib=MAu06OPFtfYNWsGtFdsCL0Fx78kxJ6q2y"
+  trackingUrl: "https://script.google.com/macros/s/AKfycbw3vmFIwEKcjxD6-YbMijVkuWbqHeImj7QHDV2x78rk8gO1Q1ZRtpqSs9RJykM5Q4X7ew/exec"
 };
