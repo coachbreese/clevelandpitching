@@ -23,7 +23,7 @@ window.TEAM = {
   footerName: "",                 // footer (default: "Cleveland Warriors Baseball Program")
 
   // Monday of Week 1, as "YYYY-MM-DD". Leave "" to turn off "This week" tracking.
-  seasonStart: "",
+  seasonStart: "2026-11-02",
 
   // Weekly check-ins: paste your Google Sheet web app link here (see tracking/SETUP.md).
   // Leave "" to hide check-ins.
