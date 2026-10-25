@@ -17,6 +17,8 @@ window.COACH_FAQ = [
     a: "**Mon:** Bullpen + arm care\n**Tue:** Light lower lift + core\n**Wed:** Flat ground work + arm care\n**Thu:** Bullpen (game sim by Week 16) + arm care\n**Fri:** Light upper lift + mobility\n**Sat:** Light catch, pre-game routine\n**Sun:** Rest / off\nPitch counts build from 20-25 (Wk 14) to 40-45 (Wk 16). Open the Calendar tab for each week." },
   { q: "Where is my day-by-day schedule?", k: "calendar schedule daily day by day week what do i do today this week 16 weeks", tab: "calendar",
     a: "Open the **Calendar** tab and tap your week number (1-16). It shows every day's lifting, throwing, arm care and nutrition focus. You can also ask me things like **\"Week 6 schedule\"**." },
+  { q: "How do I check in for the week?", k: "check in checkin check-in log done finished complete tracking report submit week coach see", tab: "calendar", checkin: true,
+    a: "Open the **Calendar** tab. Above your week's schedule is the **check-in**: tap **Lifts done**, **Throwing plan followed** and **Arm care done** for what you finished, add a note if anything hurts, and tap **Send check-in**. You can update it later in the week. No signal? It sends automatically when you're back online." },
   { q: "What should I do on a rest day?", k: "rest day off sunday recovery day nothing", tab: "overview",
     a: "Sunday is a full **Rest / Off** day in every phase. Thursdays are **active recovery**: light cardio or yoga, not a hard workout. Recovery is when your body actually gets stronger." },
   { q: "What is active recovery?", k: "active recovery thursday light cardio yoga", tab: "overview",

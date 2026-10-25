@@ -11,6 +11,7 @@ A 16-week pitcher off-season plan that installs like an app. Everything team-spe
 | `sw.js` | Lets the app open with no signal and pick up updates automatically |
 | `icons/` | Home-screen icons |
 | `setup.html` | Team setup tool (keep this on your own site only) |
+| `tracking/` | Weekly check-in script for Google Sheets and its setup guide |
 
 ## Set up a new team (about 5 minutes)
 
@@ -25,6 +26,10 @@ A 16-week pitcher off-season plan that installs like an app. Everything team-spe
 Open `team.js` in that team's repository, click the pencil icon, change the value, and click **Commit changes**. To change the app icon or the name under it, make a new package with `setup.html` and upload the new `manifest.webmanifest` and `icons` folder.
 
 **Season start:** set `seasonStart` to the Monday of Week 1 (`"2026-11-02"`). The app then shows "This week" on the Phases tab, opens the Calendar to the current week, and answers "what do I do this week/today?" in Ask Coach.
+
+## Weekly check-ins
+
+Athletes check off lifts, throwing and arm care each week; the coach sees a Google Sheet with every athlete, Weeks 1–16 and phase completion. Follow `tracking/SETUP.md` (about 15 minutes), then paste the link into `trackingUrl` in `team.js`. Until then, check-ins stay hidden.
 
 ## Update the plan for every team
 

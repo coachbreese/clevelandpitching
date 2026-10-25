@@ -22,7 +22,7 @@
             const T = window.TEAM = Object.assign({
                 school: 'Cleveland', mascot: 'Warriors', mascotSingular: 'Warrior', initials: 'CW',
                 coachName: 'Coach Breese', coachEmail: 'coachjbreese@gmail.com',
-                primary: '#006400', accent: '#FFD700', tagline: 'Work Hard. Stay Healthy. Throw Strikes.', seasonStart: ''
+                primary: '#006400', accent: '#FFD700', tagline: 'Work Hard. Stay Healthy. Throw Strikes.', seasonStart: '', trackingUrl: ''
             }, window.TEAM || {});
             T.fullName = (T.school + ' ' + T.mascot).trim();
             T.appName = T.appName || T.mascot;
@@ -310,6 +310,7 @@
                 </div>
             </div>
 
+            <div id="checkin-card" hidden></div>
             <div id="calendar-display" class="transition-opacity duration-300">
                 <!-- Dynamically populated by JS -->
             </div>
@@ -1842,6 +1843,7 @@
             const top = hits[0].e.f;
             let html = formatAnswer(top.a);
             if (wk) html += weekButton(wk) + ' ';
+            if (top.checkin && window.TEAM.trackingUrl) html += `<button type="button" data-checkin="0" class="mt-3 mr-3 inline-flex items-center gap-1 text-xs font-bold bg-team-primary text-white px-3 py-1.5 rounded hover:brightness-110"><i class="fa-solid fa-clipboard-check"></i>Open my check-in</button>`;
             if (top.see) html += `<button type="button" data-see="${top.see}" class="mt-3 mr-3 inline-flex items-center gap-1 text-xs font-bold bg-team-primary text-white px-3 py-1.5 rounded hover:bg-team-dark"><i class="fa-solid fa-person-chalkboard"></i>See the drawing</button>`;
             if (top.tab && TAB_NAMES[top.tab]) html += `<button type="button" data-goto="${top.tab}" class="mt-3 text-xs font-bold text-team-primary underline">More on the ${TAB_NAMES[top.tab]} tab</button>`;
             const related = hits.slice(1);
@@ -1956,7 +1958,7 @@
                 html = `<div class="flex flex-wrap items-center justify-between gap-3 bg-team-primary text-white rounded-xl p-4 shadow-md">
                     <div class="min-w-0"><p class="text-xs uppercase tracking-wider font-bold text-team-accentonprimary">This week</p>
                     <p class="text-lg font-bold">${escapeHtml(d.title)}</p><p class="text-sm opacity-90">${escapeHtml(d.phase)} · Week ${SEASON.week} of 16</p></div>
-                    <button type="button" data-week-open="${SEASON.week}" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>See this week</button></div>`;
+                    <div class="flex flex-wrap gap-2"><button type="button" data-week-open="${SEASON.week}" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>See this week</button>${window.TEAM.trackingUrl ? `<button type="button" data-checkin="${SEASON.week}" class="bg-white text-team-primary font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-clipboard-check mr-1"></i>Check in</button>` : ''}</div></div>`;
             } else if (SEASON.before) {
                 html = `<div class="bg-team-light border border-team-primary/30 text-team-dark rounded-xl p-4"><p class="font-bold"><i class="fa-solid fa-hourglass-half mr-2"></i>The off-season plan starts in ${SEASON.before} day${SEASON.before === 1 ? '' : 's'}.</p></div>`;
             } else if (SEASON.done) {
@@ -1971,6 +1973,134 @@
             }
             ban.addEventListener('click', e => { const b = e.target.closest('[data-week-open]'); if (b) openWeek(+b.dataset.weekOpen); });
         })();
+
+        // --- Weekly check-in: athletes tap what they finished; it lands in the coach's Google Sheet ---
+        const CHECKIN = (function () {
+            const URL_ = (window.TEAM.trackingUrl || '').trim();
+            const KEY = 'checkins-v1', QKEY = 'checkin-queue-v1', IDKEY = 'checkin-device';
+            const ITEMS = [
+                { k: 'lifts', label: 'Lifts done', icon: 'fa-dumbbell' },
+                { k: 'throwing', label: 'Throwing plan followed', icon: 'fa-baseball' },
+                { k: 'armcare', label: 'Arm care done', icon: 'fa-heart-pulse' }
+            ];
+            const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+            const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+            let device = read(IDKEY, '');
+            if (!device) { device = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); write(IDKEY, device); }
+            const saved = () => read(KEY, {});
+            const draft = {}; // unsent toggles per week
+            let typedName = '';
+
+            async function send(p) {
+                try {
+                    const r = await fetch(URL_, { method: 'POST', body: JSON.stringify(p) });
+                    const j = await r.json();
+                    return !!(j && j.ok);
+                } catch (e) {
+                    if (!navigator.onLine) return false;
+                    try { await fetch(URL_, { method: 'POST', mode: 'no-cors', body: JSON.stringify(p) }); return true; } catch { return false; }
+                }
+            }
+            async function flush() {
+                if (!URL_) return;
+                const q = read(QKEY, []);
+                if (!q.length || !navigator.onLine) return;
+                const left = [];
+                for (const p of q) { if (!(await send(p))) left.push(p); else markSent(p.week); }
+                write(QKEY, left);
+                refresh();
+            }
+            function markSent(week) {
+                const s = saved();
+                if (s[week]) { s[week].state = 'sent'; write(KEY, s); }
+            }
+            function phaseOf(w) { return Math.ceil(w / 4); }
+            function locked(w) { return SEASON && SEASON.week && w > SEASON.week; }
+            let current = 0;
+            function refresh() { if (current) render(current); }
+
+            function render(week) {
+                current = week;
+                const box = document.getElementById('checkin-card');
+                if (!box || !URL_) { if (box) box.hidden = true; return; }
+                const s = saved()[week];
+                const d = draft[week] || (draft[week] = s ? { lifts: s.lifts, throwing: s.throwing, armcare: s.armcare, pain: s.pain || '' } : { lifts: false, throwing: false, armcare: false, pain: '' });
+                const savedName = store('ask-coach-name');
+                const name = typedName || savedName;
+                let status = '';
+                if (s && s.state === 'sent') status = `<span class="inline-flex items-center gap-1 text-xs font-bold bg-green-100 text-green-800 px-2 py-1 rounded-full"><i class="fa-solid fa-check"></i>Sent ${escapeHtml(new Date(s.at).toLocaleDateString([], { month: 'short', day: 'numeric' }))}</span>`;
+                else if (s && s.state === 'queued') status = `<span class="inline-flex items-center gap-1 text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full"><i class="fa-solid fa-clock"></i>Waiting for signal</span>`;
+                if (locked(week)) {
+                    box.innerHTML = `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 text-sm text-gray-600"><i class="fa-solid fa-lock mr-2"></i>Week ${week} check-in opens when Week ${week} starts.</div>`;
+                    box.hidden = false; return;
+                }
+                const toggles = ITEMS.map(it => {
+                    const on = !!d[it.k];
+                    return `<button type="button" data-ci="${it.k}" aria-pressed="${on}" class="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg border-2 font-semibold transition-colors ${on ? 'bg-team-primary border-team-primary text-white' : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-team-primary'}">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center ${on ? 'bg-white text-team-primary' : 'bg-white border-2 border-gray-300 text-transparent'}"><i class="fa-solid fa-check text-sm"></i></span>
+                        <span class="min-w-0"><i class="fa-solid ${it.icon} mr-1.5 opacity-80"></i>${it.label}</span></button>`;
+                }).join('');
+                box.innerHTML = `
+                <div class="bg-white rounded-xl shadow-md border-2 border-team-primary p-4 md:p-5 mb-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="font-bold text-lg text-team-primary"><i class="fa-solid fa-clipboard-check mr-2"></i>Week ${week} check-in</h3>${status}
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">Tap what you finished this week, then send it to ${COACH}.</p>
+                    <div class="mt-3 ${savedName && !typedName ? 'hidden' : ''}" id="ci-name-wrap">
+                        <label for="ci-name" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Your first and last name</label>
+                        <input id="ci-name" type="text" autocomplete="name" value="${escapeHtml(name)}" placeholder="e.g. Jake Miller" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-team-primary outline-none">
+                    </div>
+                    ${savedName && !typedName ? `<p class="text-xs text-gray-500 mt-2">Checking in as <strong class="text-gray-700">${escapeHtml(name)}</strong> · <button type="button" id="ci-edit-name" class="underline text-team-primary font-semibold">change</button></p>` : ''}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">${toggles}</div>
+                    <label for="ci-pain" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mt-4 mb-1">Anything sore or hurting? <span class="normal-case font-normal text-gray-500">(optional)</span></label>
+                    <textarea id="ci-pain" rows="2" placeholder="Leave blank if you feel good" class="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-team-primary outline-none">${escapeHtml(d.pain)}</textarea>
+                    <button type="button" id="ci-send" class="mt-3 w-full sm:w-auto bg-team-accent text-team-onaccent font-bold px-6 py-3 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-paper-plane mr-2"></i>${s ? 'Update check-in' : 'Send check-in'}</button>
+                    <p id="ci-msg" class="text-sm mt-2 text-gray-600" aria-live="polite"></p>
+                </div>`;
+                box.hidden = false;
+            }
+
+            document.addEventListener('click', async e => {
+                const box = document.getElementById('checkin-card');
+                if (!box || !box.contains(e.target)) return;
+                const t = e.target.closest('[data-ci]');
+                if (t) { const d = draft[current]; d[t.dataset.ci] = !d[t.dataset.ci]; d.pain = (box.querySelector('#ci-pain') || {}).value || d.pain; render(current); return; }
+                if (e.target.closest('#ci-edit-name')) { box.querySelector('#ci-name-wrap').classList.remove('hidden'); box.querySelector('#ci-name').focus(); return; }
+                if (!e.target.closest('#ci-send')) return;
+                const nameEl = box.querySelector('#ci-name'), msg = box.querySelector('#ci-msg');
+                const name = (nameEl.value || '').trim().replace(/\s+/g, ' ');
+                if (!/\S+\s+\S+/.test(name)) { box.querySelector('#ci-name-wrap').classList.remove('hidden'); nameEl.focus(); msg.textContent = 'Add your first and last name so your coach knows who checked in.'; msg.className = 'text-sm mt-2 text-red-700'; return; }
+                store('ask-coach-name', name); typedName = '';
+                const d = draft[current]; d.pain = (box.querySelector('#ci-pain').value || '').trim();
+                const p = { id: device + '-w' + current, device, team: window.TEAM.fullName, name, week: current, phase: phaseOf(current), lifts: !!d.lifts, throwing: !!d.throwing, armcare: !!d.armcare, pain: d.pain, at: new Date().toISOString() };
+                const s = saved(); s[current] = { lifts: p.lifts, throwing: p.throwing, armcare: p.armcare, pain: p.pain, at: p.at, state: 'queued' }; write(KEY, s);
+                const btn = box.querySelector('#ci-send'); btn.disabled = true; btn.classList.add('opacity-60');
+                msg.textContent = 'Sending…'; msg.className = 'text-sm mt-2 text-gray-600';
+                const ok = navigator.onLine && await send(p);
+                if (ok) { markSent(current); }
+                else { const q = read(QKEY, []).filter(x => x.id !== p.id); q.push(p); write(QKEY, q); }
+                render(current);
+                const m2 = document.querySelector('#ci-msg');
+                if (m2) {
+                    m2.innerHTML = ok ? (p.pain ? `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent. ${COACH} will see your note. If it's sharp pain, stop throwing and tell your coach or trainer today.` : `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent to ${COACH}. Nice work this week.`)
+                        : `<i class="fa-solid fa-clock text-yellow-700 mr-1"></i>Saved. It will send automatically when you have signal.`;
+                }
+            });
+            document.addEventListener('input', e => { if (e.target && e.target.id === 'ci-name') typedName = e.target.value; });
+            window.addEventListener('online', flush);
+            setTimeout(flush, 1500);
+            return { render, enabled: !!URL_ };
+        })();
+
+        // Calendar: show the check-in for whichever week is open
+        const _renderWeekBase = renderWeek;
+        renderWeek = function (n) { _renderWeekBase(n); CHECKIN.render(n); };
+        CHECKIN.render(SEASON && SEASON.week ? SEASON.week : 1);
+        function openCheckin(n) {
+            openWeek(n);
+            setTimeout(() => { const el = document.getElementById('checkin-card'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 250);
+        }
+        document.addEventListener('click', e => { const b = e.target.closest('[data-checkin]'); if (b) openCheckin(+b.dataset.checkin || (SEASON && SEASON.week) || 1); });
 
         // --- Offline support + automatic updates ---
         if ('serviceWorker' in navigator && location.protocol === 'https:') {

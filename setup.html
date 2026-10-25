@@ -110,6 +110,10 @@
         <div><label for="tagline">Footer motto</label><input type="text" id="tagline" value="Work Hard. Stay Healthy. Throw Strikes."></div>
       </div>
 
+      <h2 style="margin-top:22px">Weekly check-ins</h2>
+      <label for="trackingUrl">Google Sheet web app link <span class="hint">· optional, add later in team.js. How to get it: tracking/SETUP.md in the package</span></label>
+      <input type="text" id="trackingUrl" placeholder="https://script.google.com/macros/s/…/exec">
+
       <div style="margin-top:24px"><button type="submit" class="btn" id="go">Download team package (.zip)</button></div>
       <p class="msg" id="msg">The package includes the full app plus this team's settings, colors and icons.</p>
     </form>
@@ -138,6 +142,7 @@
           <li>Upload <strong>everything inside</strong> the folder, including <code>icons</code>.</li>
           <li><strong>Settings → Pages →</strong> Deploy from branch, <code>main</code>, <code>/(root)</code>. Send the coach the link.</li>
           <li>To change settings later, edit <code>team.js</code> on GitHub.</li>
+          <li>For weekly check-ins, follow <code>tracking/SETUP.md</code> in the package (about 15 minutes).</li>
         </ol>
       </div>
     </div>
@@ -146,7 +151,7 @@
 
 <script>
 const $ = id => document.getElementById(id);
-const fields = ['school', 'mascot', 'mascotSingular', 'initials', 'appName', 'subtitle', 'footerName', 'coachName', 'coachEmail', 'primary', 'accent', 'seasonStart', 'tagline'];
+const fields = ['trackingUrl', 'school', 'mascot', 'mascotSingular', 'initials', 'appName', 'subtitle', 'footerName', 'coachName', 'coachEmail', 'primary', 'accent', 'seasonStart', 'tagline'];
 const hex = h => { h = String(h).replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); return /^[0-9a-f]{6}$/i.test(h) ? [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)) : null; };
 const toHex = a => '#' + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('').toUpperCase();
 const mix = (a, b, t) => toHex(hex(a).map((v, i) => v + (hex(b)[i] - v) * t));
@@ -283,7 +288,11 @@ window.TEAM = {
   footerName: ${js(v.footerName)},
 
   // Monday of Week 1, as "YYYY-MM-DD". Leave "" to turn off "This week" tracking.
-  seasonStart: ${js(v.seasonStart)}
+  seasonStart: ${js(v.seasonStart)},
+
+  // Weekly check-ins: paste your Google Sheet web app link here (see tracking/SETUP.md).
+  // Leave "" to hide check-ins.
+  trackingUrl: ${js(v.trackingUrl)}
 };
 `;
 }
@@ -309,7 +318,7 @@ $('f').addEventListener('submit', async e => {
   btn.disabled = true; msg.textContent = 'Building the package…';
   try {
     const zip = new JSZip();
-    const shared = ['index.html', 'faq.js', 'sw.js', 'README.md'];
+    const shared = ['index.html', 'faq.js', 'sw.js', 'README.md', 'tracking/Code.gs', 'tracking/SETUP.md'];
     for (const f of shared) {
       const r = await fetch(f, { cache: 'no-store' });
       if (!r.ok) throw new Error('Could not read ' + f + ' from this site.');
