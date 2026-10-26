@@ -1948,19 +1948,68 @@
         installModal.addEventListener('click', e => { if (e.target === installModal) installModal.hidden = true; });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') installModal.hidden = true; });
 
-        // --- This week: banner on Phases tab, Calendar opens to the current week ---
+        // --- Today card on the Phases tab; Calendar opens to the current week with today highlighted ---
+        const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const stripHtml = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.trim(); };
+        function taskLink(text) {
+            const t = text.toLowerCase();
+            if (/j-band|arm care/.test(t)) return { jump: 'band-routine', label: 'Arm Care' };
+            if (/med ball/.test(t)) return { jump: 'plyo-routine', label: 'Plyo balls' };
+            if (/long toss|catch|pen|flat ground|pull down|pre-game/.test(t)) return { tab: 'throwing', label: 'Throwing' };
+            if (/lift|core routine|single leg/.test(t)) return { tab: 'training', label: 'Strength' };
+            if (/protein|calorie|mass gain|meal|hydration/.test(t)) return { tab: 'nutrition', label: 'Nutrition' };
+            return null;
+        }
+        function dayFor(week, dayName) {
+            const w = typeof calendarData !== 'undefined' && calendarData[week];
+            return w ? w.days.find(d => d.day === dayName) : null;
+        }
+        function todayTasksHtml(day) {
+            return day.tasks.slice(1).map(task => {
+                const text = stripHtml(task), link = taskLink(text);
+                const inner = `<span class="flex items-center gap-2 min-w-0 text-gray-800">${task}</span>`;
+                if (!link) return `<li class="flex items-center px-3 py-2.5 rounded-lg bg-white/95 text-sm">${inner}</li>`;
+                const attr = link.jump ? `data-jump="${link.jump}"` : `data-tab-go="${link.tab}"`;
+                return `<li><button type="button" ${attr} class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/95 hover:bg-white text-sm shadow-sm">${inner}<span class="flex-shrink-0 text-xs font-bold text-team-primary whitespace-nowrap">${link.label} <i class="fa-solid fa-chevron-right text-[10px]"></i></span></button></li>`;
+            }).join('');
+        }
         (function seasonUI() {
             const ban = document.getElementById('season-banner');
             if (!SEASON || !ban) return;
+            const fmt = dt => dt.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
             let html = '';
             if (SEASON.week && typeof calendarData !== 'undefined') {
-                const d = calendarData[SEASON.week];
-                html = `<div class="flex flex-wrap items-center justify-between gap-3 bg-team-primary text-white rounded-xl p-4 shadow-md">
-                    <div class="min-w-0"><p class="text-xs uppercase tracking-wider font-bold text-team-accentonprimary">This week</p>
-                    <p class="text-lg font-bold">${escapeHtml(d.title)}</p><p class="text-sm opacity-90">${escapeHtml(d.phase)} · Week ${SEASON.week} of 16</p></div>
-                    <div class="flex flex-wrap gap-2"><button type="button" data-week-open="${SEASON.week}" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>See this week</button>${window.TEAM.trackingUrl ? `<button type="button" data-checkin="${SEASON.week}" class="bg-white text-team-primary font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-clipboard-check mr-1"></i>Check in</button>` : ''}</div></div>`;
+                const wk = calendarData[SEASON.week];
+                const day = dayFor(SEASON.week, SEASON.dayName);
+                const headline = stripHtml(day.tasks[0]);
+                const rest = /rest|off/i.test(headline);
+                const now = new Date();
+                const tmr = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+                const tWeek = SEASON.week + (tmr.getDay() === 1 ? 1 : 0);
+                const tDay = tWeek <= 16 ? dayFor(tWeek, DAY_NAMES[tmr.getDay()]) : null;
+                const checkBtn = window.TEAM.trackingUrl ? `<button type="button" data-checkin="${SEASON.week}" class="bg-white text-team-primary font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-clipboard-check mr-1"></i>Check in</button>
+                    <button type="button" data-checkin-arm="${SEASON.week}" class="bg-white/15 text-white border border-white/40 font-bold text-sm px-4 py-2 rounded-lg hover:bg-white/25"><i class="fa-solid fa-hand-holding-medical mr-1"></i>Report soreness</button>` : '';
+                html = `<div class="bg-team-primary text-white rounded-xl p-4 md:p-5 shadow-md">
+                    <div class="flex flex-wrap items-start justify-between gap-2">
+                        <div class="min-w-0"><p class="text-xs uppercase tracking-wider font-bold text-team-accentonprimary">Today · ${escapeHtml(fmt(now))}</p>
+                        <p class="text-2xl font-bold leading-tight mt-0.5">${escapeHtml(headline)}</p></div>
+                        <span class="text-xs font-bold bg-white/15 border border-white/30 px-2.5 py-1 rounded-full whitespace-nowrap">Week ${SEASON.week} of 16 · ${escapeHtml(wk.phase)}</span>
+                    </div>
+                    ${rest ? `<p class="mt-3 text-sm opacity-90">Rest day. Recover, eat well and get to bed early.</p>` : `<ul class="mt-3 space-y-2">${todayTasksHtml(day)}</ul>`}
+                    ${tDay ? `<p class="mt-3 text-sm opacity-90"><span class="font-bold text-team-accent">Tomorrow:</span> ${escapeHtml(stripHtml(tDay.tasks[0]))}</p>` : ''}
+                    <div class="flex flex-wrap gap-2 mt-4"><button type="button" data-week-open="${SEASON.week}" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>Full week</button>${checkBtn}</div>
+                </div>`;
             } else if (SEASON.before) {
-                html = `<div class="bg-team-light border border-team-primary/30 text-team-dark rounded-xl p-4"><p class="font-bold"><i class="fa-solid fa-hourglass-half mr-2"></i>The off-season plan starts in ${SEASON.before} day${SEASON.before === 1 ? '' : 's'}.</p></div>`;
+                const start = new Date(); start.setDate(start.getDate() + SEASON.before);
+                const day = dayFor(1, DAY_NAMES[start.getDay()]) || dayFor(1, 'Monday');
+                html = `<div class="bg-team-primary text-white rounded-xl p-4 md:p-5 shadow-md">
+                    <p class="text-xs uppercase tracking-wider font-bold text-team-accentonprimary">Starts in ${SEASON.before} day${SEASON.before === 1 ? '' : 's'}</p>
+                    <p class="text-2xl font-bold leading-tight mt-0.5">Day 1 · ${escapeHtml(fmt(start))}</p>
+                    <p class="mt-1 text-sm opacity-90">Week 1 is Rest &amp; Foundation: no throwing. Here's your first day:</p>
+                    <p class="mt-3 font-bold">${escapeHtml(stripHtml(day.tasks[0]))}</p>
+                    <ul class="mt-2 space-y-2">${todayTasksHtml(day)}</ul>
+                    <div class="flex flex-wrap gap-2 mt-4"><button type="button" data-week-open="1" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>Preview Week 1</button></div>
+                </div>`;
             } else if (SEASON.done) {
                 html = `<div class="bg-team-light border border-team-primary/30 text-team-dark rounded-xl p-4"><p class="font-bold"><i class="fa-solid fa-flag-checkered mr-2"></i>The 16-week off-season plan is complete. Great work.</p></div>`;
             }
@@ -1971,8 +2020,25 @@
                 const b = document.getElementById('btn-wk-' + SEASON.week);
                 if (b) { b.classList.add('ring-2', 'ring-team-accent', 'ring-offset-1'); b.title = 'This week'; b.setAttribute('aria-label', 'Week ' + SEASON.week + ', this week'); }
             }
-            ban.addEventListener('click', e => { const b = e.target.closest('[data-week-open]'); if (b) openWeek(+b.dataset.weekOpen); });
+            ban.addEventListener('click', e => {
+                const b = e.target.closest('[data-week-open]'); if (b) { openWeek(+b.dataset.weekOpen); return; }
+                const t = e.target.closest('[data-tab-go]'); if (t) { switchTab(t.dataset.tabGo); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+            });
         })();
+        // Highlight today's column when the current week is open in the Calendar
+        function markToday(n) {
+            if (!SEASON || SEASON.week !== n) return;
+            setTimeout(() => {
+                document.querySelectorAll('#calendar-display .grid > div').forEach(col => {
+                    const head = col.firstElementChild;
+                    if (!head || head.textContent.trim() !== SEASON.dayName) return;
+                    col.classList.add('ring-4', 'ring-inset', 'ring-team-accent');
+                    head.classList.remove('bg-gray-100', 'text-gray-700');
+                    head.classList.add('bg-team-accent', 'text-team-onaccent');
+                    head.textContent = 'Today · ' + SEASON.dayName;
+                });
+            }, 200);
+        }
 
         // --- Weekly check-in: athletes tap what they finished; it lands in the coach's Google Sheet ---
         const CHECKIN = (function () {
@@ -1983,6 +2049,12 @@
                 { k: 'throwing', label: 'Throwing plan followed', icon: 'fa-baseball' },
                 { k: 'armcare', label: 'Arm care done', icon: 'fa-heart-pulse' }
             ];
+            const ARM = [
+                { k: 'good', label: 'Feels good', icon: 'fa-face-smile', on: 'bg-green-600 border-green-600 text-white' },
+                { k: 'sore', label: 'Normal soreness', icon: 'fa-face-meh', on: 'bg-orange-500 border-orange-500 text-white' },
+                { k: 'pain', label: 'Pain', icon: 'fa-triangle-exclamation', on: 'bg-red-600 border-red-600 text-white' }
+            ];
+            const AREAS = ['Shoulder', 'Elbow', 'Forearm', 'Wrist / hand', 'Back', 'Hip / legs', 'Other'];
             const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
             const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
             let device = read(IDKEY, '');
@@ -2024,7 +2096,7 @@
                 const box = document.getElementById('checkin-card');
                 if (!box || !URL_) { if (box) box.hidden = true; return; }
                 const s = saved()[week];
-                const d = draft[week] || (draft[week] = s ? { lifts: s.lifts, throwing: s.throwing, armcare: s.armcare, pain: s.pain || '' } : { lifts: false, throwing: false, armcare: false, pain: '' });
+                const d = draft[week] || (draft[week] = s ? { lifts: s.lifts, throwing: s.throwing, armcare: s.armcare, arm: s.arm || (s.pain ? 'sore' : 'good'), areas: (s.areas || []).slice(), pain: s.note != null ? s.note : (s.arm ? '' : s.pain || '') } : { lifts: false, throwing: false, armcare: false, arm: '', areas: [], pain: '' });
                 const savedName = store('ask-coach-name');
                 const name = typedName || savedName;
                 let status = '';
@@ -2040,6 +2112,14 @@
                         <span class="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center ${on ? 'bg-white text-team-primary' : 'bg-white border-2 border-gray-300 text-transparent'}"><i class="fa-solid fa-check text-sm"></i></span>
                         <span class="min-w-0"><i class="fa-solid ${it.icon} mr-1.5 opacity-80"></i>${it.label}</span></button>`;
                 }).join('');
+                const armBtns = ARM.map(o => {
+                    const on = d.arm === o.k;
+                    return `<button type="button" data-arm="${o.k}" aria-pressed="${on}" class="flex flex-col items-center justify-center gap-1 px-2 py-3 rounded-lg border-2 font-semibold text-sm leading-tight text-center transition-colors ${on ? o.on : 'bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-400'}"><i class="fa-solid ${o.icon} text-lg"></i>${o.label}</button>`;
+                }).join('');
+                const areaBtns = AREAS.map(a => {
+                    const on = d.areas.includes(a);
+                    return `<button type="button" data-area="${escapeHtml(a)}" aria-pressed="${on}" class="px-3 py-2 rounded-full border-2 text-sm font-semibold transition-colors ${on ? (d.arm === 'pain' ? 'bg-red-600 border-red-600 text-white' : 'bg-orange-500 border-orange-500 text-white') : 'bg-white border-gray-300 text-gray-700 hover:border-gray-500'}">${on ? '<i class="fa-solid fa-check mr-1"></i>' : ''}${escapeHtml(a)}</button>`;
+                }).join('');
                 box.innerHTML = `
                 <div class="bg-white rounded-xl shadow-md border-2 border-team-primary p-4 md:p-5 mb-6">
                     <div class="flex flex-wrap items-center justify-between gap-2">
@@ -2052,8 +2132,16 @@
                     </div>
                     ${savedName && !typedName ? `<p class="text-xs text-gray-500 mt-2">Checking in as <strong class="text-gray-700">${escapeHtml(name)}</strong> · <button type="button" id="ci-edit-name" class="underline text-team-primary font-semibold">change</button></p>` : ''}
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">${toggles}</div>
-                    <label for="ci-pain" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mt-4 mb-1">Anything sore or hurting? <span class="normal-case font-normal text-gray-500">(optional)</span></label>
-                    <textarea id="ci-pain" rows="2" placeholder="Leave blank if you feel good" class="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-team-primary outline-none">${escapeHtml(d.pain)}</textarea>
+                    <div id="ci-arm-wrap" class="mt-4 scroll-mt-4">
+                        <p class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">How does your arm and body feel?</p>
+                        <div class="grid grid-cols-3 gap-2">${armBtns}</div>
+                        ${d.arm === 'sore' || d.arm === 'pain' ? `
+                        <p class="text-xs font-bold text-gray-700 uppercase tracking-wider mt-3 mb-1">Where? <span class="normal-case font-normal text-gray-500">(tap all that apply)</span></p>
+                        <div class="flex flex-wrap gap-2">${areaBtns}</div>
+                        ${d.arm === 'pain' ? `<div class="mt-3 flex gap-2 items-start bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 text-sm"><i class="fa-solid fa-triangle-exclamation mt-0.5"></i><p><strong>Stop throwing today.</strong> Sending this alerts ${COACH} right away, but also tell your coach or athletic trainer in person.</p></div>` : ''}
+                        <label for="ci-pain" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mt-3 mb-1">Tell ${COACH} more <span class="normal-case font-normal text-gray-500">(optional)</span></label>
+                        <textarea id="ci-pain" rows="2" placeholder="When does it hurt? How bad, 1 to 10? Did something happen?" class="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-team-primary outline-none">${escapeHtml(d.pain)}</textarea>` : ''}
+                    </div>
                     <button type="button" id="ci-send" class="mt-3 w-full sm:w-auto bg-team-accent text-team-onaccent font-bold px-6 py-3 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-paper-plane mr-2"></i>${s ? 'Update check-in' : 'Send check-in'}</button>
                     <p id="ci-msg" class="text-sm mt-2 text-gray-600" aria-live="polite"></p>
                 </div>`;
@@ -2064,16 +2152,25 @@
                 const box = document.getElementById('checkin-card');
                 if (!box || !box.contains(e.target)) return;
                 const t = e.target.closest('[data-ci]');
-                if (t) { const d = draft[current]; d[t.dataset.ci] = !d[t.dataset.ci]; d.pain = (box.querySelector('#ci-pain') || {}).value || d.pain; render(current); return; }
+                const keepNote = () => { const el = box.querySelector('#ci-pain'); if (el) draft[current].pain = el.value; };
+                if (t) { const d = draft[current]; keepNote(); d[t.dataset.ci] = !d[t.dataset.ci]; render(current); return; }
+                const ab = e.target.closest('[data-arm]');
+                if (ab) { const d = draft[current]; keepNote(); d.arm = ab.dataset.arm; if (d.arm === 'good') d.areas = []; render(current); return; }
+                const ar = e.target.closest('[data-area]');
+                if (ar) { const d = draft[current]; keepNote(); const a = ar.dataset.area; d.areas = d.areas.includes(a) ? d.areas.filter(x => x !== a) : d.areas.concat(a); render(current); return; }
                 if (e.target.closest('#ci-edit-name')) { box.querySelector('#ci-name-wrap').classList.remove('hidden'); box.querySelector('#ci-name').focus(); return; }
                 if (!e.target.closest('#ci-send')) return;
                 const nameEl = box.querySelector('#ci-name'), msg = box.querySelector('#ci-msg');
                 const name = (nameEl.value || '').trim().replace(/\s+/g, ' ');
                 if (!/\S+\s+\S+/.test(name)) { box.querySelector('#ci-name-wrap').classList.remove('hidden'); nameEl.focus(); msg.textContent = 'Add your first and last name so your coach knows who checked in.'; msg.className = 'text-sm mt-2 text-red-700'; return; }
                 store('ask-coach-name', name); typedName = '';
-                const d = draft[current]; d.pain = (box.querySelector('#ci-pain').value || '').trim();
-                const p = { id: device + '-w' + current, device, team: window.TEAM.fullName, name, week: current, phase: phaseOf(current), lifts: !!d.lifts, throwing: !!d.throwing, armcare: !!d.armcare, pain: d.pain, at: new Date().toISOString() };
-                const s = saved(); s[current] = { lifts: p.lifts, throwing: p.throwing, armcare: p.armcare, pain: p.pain, at: p.at, state: 'queued' }; write(KEY, s);
+                const d = draft[current]; const noteEl = box.querySelector('#ci-pain'); d.pain = noteEl ? noteEl.value.trim() : (d.arm === 'good' ? '' : d.pain);
+                if (!d.arm) { msg.textContent = 'Tap how your arm and body feel.'; msg.className = 'text-sm mt-2 text-red-700'; box.querySelector('#ci-arm-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+                if (d.arm !== 'good' && !d.areas.length) { msg.textContent = 'Tap where it\'s sore so your coach knows.'; msg.className = 'text-sm mt-2 text-red-700'; return; }
+                const note = d.arm === 'good' ? '' : d.pain;
+                const legacy = d.arm === 'good' ? '' : (d.arm === 'pain' ? 'PAIN' : 'Sore') + ': ' + d.areas.join(', ') + (note ? ' (' + note + ')' : '');
+                const p = { id: device + '-w' + current, device, team: window.TEAM.fullName, name, week: current, phase: phaseOf(current), lifts: !!d.lifts, throwing: !!d.throwing, armcare: !!d.armcare, arm: d.arm, areas: d.areas.slice(), note, pain: legacy, at: new Date().toISOString() };
+                const s = saved(); s[current] = { lifts: p.lifts, throwing: p.throwing, armcare: p.armcare, arm: p.arm, areas: p.areas, note: p.note, pain: p.pain, at: p.at, state: 'queued' }; write(KEY, s);
                 const btn = box.querySelector('#ci-send'); btn.disabled = true; btn.classList.add('opacity-60');
                 msg.textContent = 'Sending…'; msg.className = 'text-sm mt-2 text-gray-600';
                 const ok = navigator.onLine && await send(p);
@@ -2082,7 +2179,7 @@
                 render(current);
                 const m2 = document.querySelector('#ci-msg');
                 if (m2) {
-                    m2.innerHTML = ok ? (p.pain ? `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent. ${COACH} will see your note. If it's sharp pain, stop throwing and tell your coach or trainer today.` : `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent to ${COACH}. Nice work this week.`)
+                    m2.innerHTML = ok ? (p.arm === 'pain' ? `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent. ${COACH} has been alerted. No throwing until you've talked to your coach or trainer.` : p.arm === 'sore' ? `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent. ${COACH} will see where you're sore. If it turns sharp, stop and report Pain.` : `<i class="fa-solid fa-check text-green-700 mr-1"></i>Sent to ${COACH}. Nice work this week.`)
                         : `<i class="fa-solid fa-clock text-yellow-700 mr-1"></i>Saved. It will send automatically when you have signal.`;
                 }
             });
@@ -2094,13 +2191,17 @@
 
         // Calendar: show the check-in for whichever week is open
         const _renderWeekBase = renderWeek;
-        renderWeek = function (n) { _renderWeekBase(n); CHECKIN.render(n); };
+        renderWeek = function (n) { _renderWeekBase(n); CHECKIN.render(n); markToday(n); };
         CHECKIN.render(SEASON && SEASON.week ? SEASON.week : 1);
-        function openCheckin(n) {
+        if (SEASON && SEASON.week) markToday(SEASON.week);
+        function openCheckin(n, part) {
             openWeek(n);
-            setTimeout(() => { const el = document.getElementById('checkin-card'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 250);
+            setTimeout(() => { const el = document.getElementById(part === 'arm' ? 'ci-arm-wrap' : 'checkin-card'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 250);
         }
-        document.addEventListener('click', e => { const b = e.target.closest('[data-checkin]'); if (b) openCheckin(+b.dataset.checkin || (SEASON && SEASON.week) || 1); });
+        document.addEventListener('click', e => {
+            const b = e.target.closest('[data-checkin]'); if (b) { openCheckin(+b.dataset.checkin || (SEASON && SEASON.week) || 1); return; }
+            const a = e.target.closest('[data-checkin-arm]'); if (a) openCheckin(+a.dataset.checkinArm || (SEASON && SEASON.week) || 1, 'arm');
+        });
 
         // --- Offline support + automatic updates ---
         if ('serviceWorker' in navigator && location.protocol === 'https:') {
