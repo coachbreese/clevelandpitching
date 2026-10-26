@@ -135,7 +135,7 @@ window.COACH_FAQ = [
   // ---------- NUTRITION ----------
   { q: "What should I eat before a bullpen or workout?", k: "eat before bullpen workout pre workout throwing snack pregame", tab: "nutrition",
     a: "A **carb-heavy snack 1-2 hours before**, like a banana, oatmeal, or toast with jam. On the sample plan, that's a banana with trail mix or a PB sandwich around 3:00 PM." },
-  { q: "What should I eat after a workout?", k: "after workout post workout recovery eat drink chocolate milk", tab: "nutrition",
+  { q: "What should I eat after a workout?", k: "after workout post workout postworkout lift lifting practice throwing recovery eat drink chocolate milk", tab: "nutrition",
     a: "A **protein + carb mix within 30-45 minutes**: chocolate milk, a protein shake, or chicken and rice." },
   { q: "How much protein do I need?", k: "protein grams how much per pound", tab: "nutrition",
     a: "**0.8-1.2 g per pound of body weight.** If you're trying to add mass, aim for **1.0-1.2 g per pound**. Use the calculator above this box for your number." },
@@ -160,7 +160,30 @@ window.COACH_FAQ = [
   { q: "What are good carbs?", k: "carbs carbohydrates energy rice potatoes pasta", tab: "nutrition",
     a: "Carbs are your main fuel: sweet or white potatoes, brown or white rice, oatmeal, quinoa, whole-wheat pasta or bread, beans, bananas and berries." },
   { q: "What are healthy fats?", k: "fats fat healthy avocado nuts", tab: "nutrition",
-    a: "For hormone and joint health: avocados, mixed nuts, chia or flax seeds, olive oil, peanut butter, salmon and cheese." }
+    a: "For hormone and joint health: avocados, mixed nuts, chia or flax seeds, olive oil, peanut butter, salmon and cheese." },
+  // ---------- MENTAL GAME & SLEEP ----------
+  { q: "How do I get better at the mental game?", k: "mental game tips mindset mind focus confidence psychology mentally tough toughness head mental side", tab: "mental",
+    a: "Train your mind a few minutes every day, just like your arm:\n**Breathe:** 5 minutes of box breathing daily.\n**Don't ride the wave:** release, reset, refocus between every pitch.\n**See it first:** visualize pitches the night before you throw.\n**Sleep:** 8-10 hours a night.\nThe Mental tab has a breathing timer and a plan for each phase." },
+  { q: "How do I meditate?", k: "meditate meditation mindfulness breathing breathe calm focus box breathing mental", tab: "mental",
+    a: "**5 minutes a day, same time every day.** Sit tall or lie down, phone on Do Not Disturb, eyes closed.\nUse **box breathing**: in through your nose for 4, hold 4, out for 4, hold 4. The Mental tab has a timer that paces it for you.\nYour mind will wander. Notice it and come back to your breath. **That's the rep**, and it's the same skill as getting back to the next pitch after a bad one." },
+  { q: "How do I calm down when I'm nervous before a game?", k: "nervous anxious anxiety butterflies scared pressure big game jitters calm down nerves", tab: "mental",
+    a: "Nerves are normal. They mean your body is getting ready to compete.\n**Before you warm up:** 2 minutes of box breathing (in 4, hold 4, out 4, hold 4), then picture your first three batters.\n**On the mound:** use the **reset sigh**. Two breaths in through your nose, then one long breath out. It takes about 10 seconds and slows your heart rate fast.\nFocus on what you control: effort, body language, the next pitch." },
+  { q: "How do I keep my emotions in check on the mound?", k: "emotions emotional angry frustrated mad upset bad inning ride the wave composure temper rattled tilt lose it calm call umpire ump homer home run gave giving up error errors reset composed", tab: "mental",
+    a: "**Don't ride the wave.** Strikeout or home run, you look the same: same tempo, same body language.\nBetween every pitch, run your reset:\n**1. Release:** a physical action that lets the last pitch go (turn your back, rosin, fix your cap).\n**2. Reset:** one reset sigh, two breaths in through the nose and one long breath out.\n**3. Refocus:** look at your focal point, say your cue word, get the sign and commit.\n**Red light** (angry, tight)? Step off the rubber, take two reset sighs, then one pitch at a time." },
+  { q: "What should I say to myself on the mound?", k: "self talk cue word positive thinking negative thoughts confidence mindset what to say", tab: "mental",
+    a: "Say what to **do**, not what to avoid. Your brain hears the action.\n\"Don't walk him\" becomes **\"Hit the glove.\"**\n\"Don't leave it up\" becomes **\"Down and through.\"**\n\"I always blow it here\" becomes **\"I've trained for this.\"**\nPick one short cue word (\"next pitch\", \"attack\", \"glove\") and use it every time you refocus." },
+  { q: "How do I visualize pitching?", k: "visualize visualization imagery imagine picture mental reps see it mental rehearsal", tab: "mental",
+    a: "5 minutes, ideally in bed at night:\n**1.** Five slow breaths, eyes closed.\n**2.** See it through your own eyes: the mound, the catcher, the glove.\n**3.** Feel the seams, your weight loading into your back leg, your arm working through the motion.\n**4.** Hear the mitt pop.\n**5.** Throw 10 pitches in real time, each one hitting the glove.\n**6.** Add trouble, like a runner on second after an error, and see yourself reset and make your pitch.\nIn Phase 4, picture each bullpen the night before." },
+  { q: "How much sleep do I need?", k: "sleep hours how much rest night bedtime bed go to bed what time lights out wake up tired enough sleep need", tab: "mental",
+    a: "**8 to 10 hours a night.** That's what the American Academy of Sleep Medicine recommends for teens 13-18.\nIt matters: in one study, middle and high school athletes who slept under 8 hours were **about 1.7 times more likely to get hurt**. Stanford basketball players who spent 10 hours in bed shot about **9% better** and sprinted faster.\nSet your wake-up time on the Mental tab and it'll tell you your lights-out time." },
+  { q: "Why is sleep important for pitchers?", k: "sleep important why benefits recovery growth hormone muscle performance velocity arm", tab: "mental",
+    a: "**Body:** deep sleep is when your body releases most of its growth hormone. That's when muscle from your lifts gets rebuilt and your arm recovers from throwing.\n**Mind:** sleep locks in the mechanics you practiced that day, and it controls mood, focus and reaction time.\n**Arm:** a tired body moves worse, and bad mechanics load the shoulder and elbow. Sleep is part of your arm care." },
+  { q: "I can't fall asleep. What should I do?", k: "cant sleep can't not unable fall asleep insomnia awake at night trouble sleeping restless", tab: "mental",
+    a: "**Screens off 30-60 minutes before bed.** Charge your phone outside your room if you can.\nKeep the same bedtime and wake time every day, weekends within an hour.\nCool, dark, quiet room. **No caffeine or energy drinks after lunch.**\nIn bed, do 5 minutes of box breathing or a visualization.\nIf you're always tired even after a full night, or you snore and gasp at night, tell your parents and your doctor." },
+  { q: "Are naps okay?", k: "nap naps napping afternoon sleep short tired after school", tab: "mental",
+    a: "Yes, if they're short. **20-30 minutes, before 4 pm.** Longer or later naps make it harder to fall asleep at night. A nap helps after a short night, but it doesn't replace 8-10 hours." },
+  { q: "Can I drink energy drinks or caffeine?", k: "energy drink drinks caffeine coffee red bull monster celsius pre workout preworkout soda", tab: "mental",
+    a: "Skip energy drinks. Caffeine stays in your system for hours, and drinking it after lunch can wreck your sleep, which costs you more than the drink gives you.\nFor energy, use the basics: **8-10 hours of sleep, real meals, and water** (half your body weight in ounces)." }
 ];
 
 // Words that mean "this might be an injury". These always get the safety answer.

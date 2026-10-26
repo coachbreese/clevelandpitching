@@ -98,7 +98,8 @@
         .coach-answer p + p { margin-top: .35rem; }
         .num { font-variant-numeric: tabular-nums; }
         .drill-svg { display: block; width: 100%; height: auto; max-height: 160px; }
-        #band-routine, #plyo-routine { scroll-margin-top: 140px; }
+        #band-routine, #plyo-routine, .mental-anchor { scroll-margin-top: 140px; }
+        @media (prefers-reduced-motion: reduce) { #breath-ring { transition: none !important; } }
         [hidden] { display: none !important; }
         .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
         footer { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
@@ -146,6 +147,9 @@
                     </button>
                     <button onclick="switchTab('nutrition')" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-white hover:bg-white/10" data-target="nutrition">
                         <i class="fa-solid fa-apple-whole mr-2"></i>Nutrition
+                    </button>
+                    <button onclick="switchTab('mental')" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-white hover:bg-white/10" data-target="mental">
+                        <i class="fa-solid fa-brain mr-2"></i>Mental
                     </button>
                     <button onclick="switchTab('coach-ai')" class="tab-btn px-4 py-2 rounded-md text-sm font-medium transition-colors text-white hover:bg-white/10 border border-team-accent/50" data-target="coach-ai">
                         <i class="fa-solid fa-comments mr-2 text-team-accentonprimary"></i>Ask Coach
@@ -1347,6 +1351,245 @@
         </section>
 
         <!-- ASK COACH TAB -->
+        <!-- MENTAL TAB -->
+        <section id="mental" class="tab-content">
+            <div class="mb-6 text-center">
+                <i class="fa-solid fa-brain text-4xl text-team-accent mb-4"></i>
+                <h2 class="text-3xl font-bold text-team-primary">Mental Game &amp; Sleep</h2>
+                <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Your arm gets you to the mound. Your mind decides what happens once you're there. Train it like you train your body: a few minutes, every day.</p>
+            </div>
+
+            <nav aria-label="Mental game sections" class="flex flex-wrap justify-center gap-2 mb-8">
+                <button type="button" data-mental-go="mental-breathe" class="text-sm font-bold bg-white border-2 border-team-primary/30 text-team-primary px-4 py-2 rounded-full hover:border-team-primary"><i class="fa-solid fa-wind mr-1.5"></i>Breathe</button>
+                <button type="button" data-mental-go="mental-wave" class="text-sm font-bold bg-white border-2 border-team-primary/30 text-team-primary px-4 py-2 rounded-full hover:border-team-primary"><i class="fa-solid fa-water mr-1.5"></i>Don't ride the wave</button>
+                <button type="button" data-mental-go="mental-see" class="text-sm font-bold bg-white border-2 border-team-primary/30 text-team-primary px-4 py-2 rounded-full hover:border-team-primary"><i class="fa-solid fa-eye mr-1.5"></i>See it first</button>
+                <button type="button" data-mental-go="mental-sleep" class="text-sm font-bold bg-white border-2 border-team-primary/30 text-team-primary px-4 py-2 rounded-full hover:border-team-primary"><i class="fa-solid fa-moon mr-1.5"></i>Sleep</button>
+                <button type="button" data-mental-go="mental-plan" class="text-sm font-bold bg-white border-2 border-team-primary/30 text-team-primary px-4 py-2 rounded-full hover:border-team-primary"><i class="fa-solid fa-list-check mr-1.5"></i>Your 16 weeks</button>
+            </nav>
+
+            <!-- BREATHE -->
+            <div id="mental-breathe" class="mental-anchor bg-white rounded-xl shadow-md border-t-4 border-team-primary p-5 md:p-6 mb-8">
+                <h3 class="text-2xl font-bold text-team-primary mb-1"><i class="fa-solid fa-wind mr-2 text-team-accent"></i>Breathe: 5 minutes a day</h3>
+                <p class="text-gray-600 mb-5">Meditation is reps for your focus. Your mind <em>will</em> wander. Each time you notice and come back to your breath, that's one rep, and it's the same skill you use to come back to the next pitch after a bad one.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-team-light/60 border border-team-primary/20 rounded-xl p-4 md:p-5">
+                        <div class="flex flex-wrap gap-2 mb-4" role="group" aria-label="Breathing pattern">
+                            <button type="button" data-breath-mode="box" aria-pressed="true" class="breath-mode text-sm font-bold px-3 py-2 rounded-lg border-2">Box breathing</button>
+                            <button type="button" data-breath-mode="sigh" aria-pressed="false" class="breath-mode text-sm font-bold px-3 py-2 rounded-lg border-2">Reset sigh</button>
+                        </div>
+                        <p id="breath-desc" class="text-sm text-gray-700 mb-4 min-h-[40px]"></p>
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-52 h-52 flex items-center justify-center">
+                                <div id="breath-ring" class="absolute inset-0 rounded-full bg-team-primary/15 border-4 border-team-primary/40" style="transform: scale(.55); transition: transform 1s linear"></div>
+                                <div class="relative text-center">
+                                    <p id="breath-phase" class="text-2xl font-bold text-team-dark">Ready</p>
+                                    <p id="breath-count" class="num text-4xl font-extrabold text-team-primary leading-none mt-1">&nbsp;</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center justify-center gap-2 mt-4">
+                                <label for="breath-mins" class="text-sm font-bold text-gray-700">Time</label>
+                                <select id="breath-mins" class="px-3 py-2 rounded-lg border border-gray-300 text-sm bg-white">
+                                    <option value="1">1 min</option><option value="3">3 min</option><option value="5" selected>5 min</option><option value="10">10 min</option>
+                                </select>
+                                <button type="button" id="breath-start" class="bg-team-accent text-team-onaccent font-bold px-5 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-play mr-1.5"></i>Start</button>
+                            </div>
+                            <p id="breath-left" class="num text-xs text-gray-600 mt-2" aria-live="polite"></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-team-dark mb-2">How to do it</h4>
+                            <ol class="space-y-2 text-sm text-gray-700">
+                                <li class="flex gap-3"><span class="num flex-shrink-0 w-6 h-6 rounded-full bg-team-primary text-white text-xs font-bold flex items-center justify-center">1</span><span>Same time every day: after school, after your lift, or in bed at night.</span></li>
+                                <li class="flex gap-3"><span class="num flex-shrink-0 w-6 h-6 rounded-full bg-team-primary text-white text-xs font-bold flex items-center justify-center">2</span><span>Sit tall or lie down. Phone on Do Not Disturb. Close your eyes.</span></li>
+                                <li class="flex gap-3"><span class="num flex-shrink-0 w-6 h-6 rounded-full bg-team-primary text-white text-xs font-bold flex items-center justify-center">3</span><span>Breathe in through your nose, low into your belly. Follow the timer.</span></li>
+                                <li class="flex gap-3"><span class="num flex-shrink-0 w-6 h-6 rounded-full bg-team-primary text-white text-xs font-bold flex items-center justify-center">4</span><span>Mind wandered? No big deal. Notice it, then come back to the breath. That's the rep.</span></li>
+                            </ol>
+                        </div>
+                        <div class="bg-yellow-50 border border-team-accent/50 rounded-lg p-4 text-sm text-gray-800">
+                            <p class="font-bold text-team-dark mb-1"><i class="fa-solid fa-baseball mr-1.5"></i>On the mound</p>
+                            <p><strong>Box breathing</strong> (in 4, hold 4, out 4, hold 4) is for daily practice and before you warm up. The <strong>reset sigh</strong> (two breaths in through the nose, one long breath out) takes about 10 seconds. Use it on the back of the mound between pitches.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DON'T RIDE THE WAVE -->
+            <div id="mental-wave" class="mental-anchor bg-white rounded-xl shadow-md border-t-4 border-team-accent p-5 md:p-6 mb-8">
+                <h3 class="text-2xl font-bold text-team-primary mb-1"><i class="fa-solid fa-water mr-2 text-team-accent"></i>Don't ride the wave</h3>
+                <p class="text-gray-600 mb-5">Strikeout or home run, you look the same. Same tempo, same body language, same routine. Pitchers who ride every high and low lose control of the inning. Pitchers who stay even get the next out.</p>
+
+                <h4 class="font-bold text-team-dark mb-3">Your pitch-to-pitch reset</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                    <div class="rounded-xl border-2 border-team-primary/30 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-team-primary">Step 1</p>
+                        <p class="text-xl font-bold text-team-dark mt-0.5"><i class="fa-solid fa-hand mr-1.5 text-team-accent"></i>Release</p>
+                        <p class="text-sm text-gray-700 mt-2">Let the last pitch go with a physical action: turn your back to the plate, grab the rosin, fix your cap. Pick one and use it every time.</p>
+                    </div>
+                    <div class="rounded-xl border-2 border-team-primary/30 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-team-primary">Step 2</p>
+                        <p class="text-xl font-bold text-team-dark mt-0.5"><i class="fa-solid fa-wind mr-1.5 text-team-accent"></i>Reset</p>
+                        <p class="text-sm text-gray-700 mt-2">One reset sigh: two breaths in through the nose, one long breath out. Shoulders drop. Heart rate comes down.</p>
+                    </div>
+                    <div class="rounded-xl border-2 border-team-primary/30 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-team-primary">Step 3</p>
+                        <p class="text-xl font-bold text-team-dark mt-0.5"><i class="fa-solid fa-crosshairs mr-1.5 text-team-accent"></i>Refocus</p>
+                        <p class="text-sm text-gray-700 mt-2">Look at your focal point (foul pole, scoreboard, a spot on the fence) and say your cue word. Get the sign. Commit to one pitch.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-team-dark mb-3">Know your light</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex gap-3 items-start bg-green-50 border border-green-200 rounded-lg p-3"><span class="flex-shrink-0 w-4 h-4 mt-0.5 rounded-full bg-green-600"></span><span class="text-gray-800"><strong>Green:</strong> locked in, breathing slow, trusting your stuff. Keep going.</span></li>
+                            <li class="flex gap-3 items-start bg-yellow-50 border border-yellow-200 rounded-lg p-3"><span class="flex-shrink-0 w-4 h-4 mt-0.5 rounded-full bg-yellow-400"></span><span class="text-gray-800"><strong>Yellow:</strong> rushing, overthrowing, glancing at the ump or the dugout. Slow down and do your full reset.</span></li>
+                            <li class="flex gap-3 items-start bg-red-50 border border-red-200 rounded-lg p-3"><span class="flex-shrink-0 w-4 h-4 mt-0.5 rounded-full bg-red-600"></span><span class="text-gray-800"><strong>Red:</strong> angry, tight, can't stop thinking about the last pitch. Step off the rubber. Two reset sighs. Then one pitch at a time.</span></li>
+                        </ul>
+                        <p class="text-xs text-gray-500 mt-2">The traffic-light idea comes from sports psychologist Ken Ravizza's work with baseball players.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-team-dark mb-3">Say what to do, not what to avoid</h4>
+                        <div class="rounded-lg border border-gray-200 overflow-hidden text-sm">
+                            <div class="grid grid-cols-2 bg-gray-100 font-bold text-gray-700"><span class="px-3 py-2">Instead of</span><span class="px-3 py-2">Say</span></div>
+                            <div class="grid grid-cols-2 border-t border-gray-200"><span class="px-3 py-2 text-gray-500 line-through">Don't walk him</span><span class="px-3 py-2 font-semibold text-team-dark">Hit the glove</span></div>
+                            <div class="grid grid-cols-2 border-t border-gray-200"><span class="px-3 py-2 text-gray-500 line-through">Don't leave it up</span><span class="px-3 py-2 font-semibold text-team-dark">Down and through</span></div>
+                            <div class="grid grid-cols-2 border-t border-gray-200"><span class="px-3 py-2 text-gray-500 line-through">I always blow it here</span><span class="px-3 py-2 font-semibold text-team-dark">I've trained for this</span></div>
+                            <div class="grid grid-cols-2 border-t border-gray-200"><span class="px-3 py-2 text-gray-500 line-through">That ump is killing me</span><span class="px-3 py-2 font-semibold text-team-dark">Next pitch</span></div>
+                        </div>
+                        <div class="mt-4 bg-team-light/60 border border-team-primary/20 rounded-lg p-3 text-sm text-gray-800">
+                            <p><strong class="text-team-dark">Control the controllables:</strong> effort, attitude, body language, preparation, the next pitch. <span class="text-gray-600">Not yours to control: the ump, the weather, errors behind you, the last pitch.</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEE IT FIRST -->
+            <div id="mental-see" class="mental-anchor bg-white rounded-xl shadow-md border-t-4 border-team-primary p-5 md:p-6 mb-8">
+                <h3 class="text-2xl font-bold text-team-primary mb-1"><i class="fa-solid fa-eye mr-2 text-team-accent"></i>See it first: visualization</h3>
+                <p class="text-gray-600 mb-5">Picture pitches clearly enough, with what you see, feel and hear, and you're practicing your delivery without using up any of your arm. Most elite athletes do it. It takes 5 minutes, and lying in bed at night is a great time.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <ol class="space-y-3 text-sm text-gray-700">
+                        <li class="flex gap-3"><span class="num flex-shrink-0 w-7 h-7 rounded-full bg-team-accent text-team-onaccent text-sm font-bold flex items-center justify-center">1</span><span><strong class="text-team-dark">Get calm.</strong> Five slow breaths, eyes closed.</span></li>
+                        <li class="flex gap-3"><span class="num flex-shrink-0 w-7 h-7 rounded-full bg-team-accent text-team-onaccent text-sm font-bold flex items-center justify-center">2</span><span><strong class="text-team-dark">See it through your own eyes.</strong> The mound under your feet, the catcher, the target in his glove.</span></li>
+                        <li class="flex gap-3"><span class="num flex-shrink-0 w-7 h-7 rounded-full bg-team-accent text-team-onaccent text-sm font-bold flex items-center justify-center">3</span><span><strong class="text-team-dark">Feel it.</strong> Seams on your fingers, weight loading into your back leg, your arm working through the motion.</span></li>
+                        <li class="flex gap-3"><span class="num flex-shrink-0 w-7 h-7 rounded-full bg-team-accent text-team-onaccent text-sm font-bold flex items-center justify-center">4</span><span><strong class="text-team-dark">Hear it.</strong> The crowd, your catcher's voice, the pop of the mitt.</span></li>
+                        <li class="flex gap-3"><span class="num flex-shrink-0 w-7 h-7 rounded-full bg-team-accent text-team-onaccent text-sm font-bold flex items-center justify-center">5</span><span><strong class="text-team-dark">Throw 10 pitches in real time.</strong> Each one hits the glove. Use your real delivery speed, not slow motion.</span></li>
+                        <li class="flex gap-3"><span class="num flex-shrink-0 w-7 h-7 rounded-full bg-team-accent text-team-onaccent text-sm font-bold flex items-center justify-center">6</span><span><strong class="text-team-dark">Add trouble.</strong> An error puts a runner on second. See yourself do your release, reset and refocus, then make your pitch.</span></li>
+                    </ol>
+                    <div class="space-y-3">
+                        <div class="bg-team-light/60 border border-team-primary/20 rounded-lg p-4 text-sm text-gray-800">
+                            <p class="font-bold text-team-dark mb-1">When to use it</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Phases 1–2 (no or light throwing): picture clean mechanics 3 times a week.</li>
+                                <li>Phase 3: picture your long toss and pull-downs the night before.</li>
+                                <li>Phase 4: picture the whole bullpen the night before, pitch by pitch.</li>
+                                <li>Game day: picture your first three batters before you warm up.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-50 border border-team-accent/50 rounded-lg p-4 text-sm text-gray-800">
+                            <p><strong class="text-team-dark">Make it real.</strong> Wear your spikes or hold a ball while you do it. The more it feels like the mound, the better it carries over.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLEEP -->
+            <div id="mental-sleep" class="mental-anchor bg-white rounded-xl shadow-md border-t-4 border-indigo-500 p-5 md:p-6 mb-8">
+                <h3 class="text-2xl font-bold text-team-primary mb-1"><i class="fa-solid fa-moon mr-2 text-indigo-500"></i>Sleep: the free performance boost</h3>
+                <p class="text-gray-600 mb-5">Sleep is when the work you did today turns into results. Short sleep means slower recovery, slower reactions and a higher chance of getting hurt.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                    <div class="rounded-xl bg-indigo-50 border border-indigo-100 p-4 text-center">
+                        <p class="num text-4xl font-extrabold text-indigo-700">8–10</p>
+                        <p class="text-sm font-bold text-indigo-900">hours a night</p>
+                        <p class="text-xs text-gray-600 mt-1">What sleep doctors recommend for teens 13–18 (American Academy of Sleep Medicine).</p>
+                    </div>
+                    <div class="rounded-xl bg-red-50 border border-red-100 p-4 text-center">
+                        <p class="num text-4xl font-extrabold text-red-700">1.7×</p>
+                        <p class="text-sm font-bold text-red-900">more likely to get hurt</p>
+                        <p class="text-xs text-gray-600 mt-1">Middle and high school athletes who slept under 8 hours, compared with those who slept more (Milewski et al., 2014).</p>
+                    </div>
+                    <div class="rounded-xl bg-green-50 border border-green-200 p-4 text-center">
+                        <p class="num text-4xl font-extrabold text-green-700">+9%</p>
+                        <p class="text-sm font-bold text-green-900">shooting accuracy</p>
+                        <p class="text-xs text-gray-600 mt-1">Stanford basketball players who spent 10 hours in bed each night shot better and sprinted faster (Mah et al., 2011).</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                    <div class="rounded-lg border border-gray-200 p-4">
+                        <p class="font-bold text-team-dark mb-1"><i class="fa-solid fa-dumbbell mr-1.5 text-team-primary"></i>Your body</p>
+                        <p class="text-sm text-gray-700">Deep sleep is when your body releases most of its growth hormone. That's when muscle from your lifts gets rebuilt and your arm recovers from throwing.</p>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 p-4">
+                        <p class="font-bold text-team-dark mb-1"><i class="fa-solid fa-brain mr-1.5 text-team-primary"></i>Your mind</p>
+                        <p class="text-sm text-gray-700">Sleep locks in the mechanics you practiced that day. It also controls mood, focus and reaction time. Tired pitchers lose command and get frustrated faster.</p>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 p-4">
+                        <p class="font-bold text-team-dark mb-1"><i class="fa-solid fa-shield-heart mr-1.5 text-team-primary"></i>Your arm</p>
+                        <p class="text-sm text-gray-700">A tired body moves worse, and bad mechanics load the shoulder and elbow. Sleep is part of your arm care.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-team-dark mb-3">Sleep playbook</h4>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="flex gap-2"><i class="fa-solid fa-clock text-indigo-500 mt-1 w-4"></i><span><strong>Same bedtime and wake time</strong> every day, weekends within an hour.</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-mobile-screen text-indigo-500 mt-1 w-4"></i><span><strong>Screens off 30–60 minutes before bed.</strong> Charge your phone outside the bedroom if you can.</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-snowflake text-indigo-500 mt-1 w-4"></i><span><strong>Cool, dark, quiet room.</strong></span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-mug-hot text-indigo-500 mt-1 w-4"></i><span><strong>No caffeine or energy drinks after lunch.</strong></span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-bed text-indigo-500 mt-1 w-4"></i><span><strong>Short night?</strong> A 20–30 minute nap before 4 pm helps. Longer naps can wreck your night.</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-wind text-indigo-500 mt-1 w-4"></i><span><strong>Can't fall asleep?</strong> Do 5 minutes of box breathing or a visualization in bed.</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 md:p-5">
+                        <h4 class="font-bold text-indigo-900 mb-1"><i class="fa-solid fa-bell mr-1.5"></i>My bedtime</h4>
+                        <p class="text-sm text-gray-700 mb-3">When do you have to get up? We'll work back 9 hours of sleep plus 15 minutes to fall asleep.</p>
+                        <div class="flex flex-wrap items-end gap-3">
+                            <div>
+                                <label for="wake-time" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Wake up at</label>
+                                <input id="wake-time" type="time" value="06:30" class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-base">
+                            </div>
+                            <div class="flex-1 min-w-[160px]">
+                                <p class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Lights out by</p>
+                                <p id="bedtime-out" class="num text-3xl font-extrabold text-indigo-700 leading-none py-1">9:15 PM</p>
+                            </div>
+                        </div>
+                        <p id="bedtime-note" class="text-xs text-gray-600 mt-3">Screens off by <strong id="screens-out" class="num">8:30 PM</strong>. Your bedtime shows on the Today card each night.</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">Always tired even after good sleep, or snoring and gasping at night? Tell your parents and your doctor.</p>
+            </div>
+
+            <!-- 16-WEEK PLAN -->
+            <div id="mental-plan" class="mental-anchor mb-4">
+                <h3 class="text-2xl font-bold text-team-primary mb-4 text-center"><i class="fa-solid fa-list-check mr-2 text-team-accent"></i>Your mental plan, 16 weeks</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div data-mental-phase="1" class="mental-phase bg-white rounded-xl shadow-sm border-2 border-gray-200 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Phase 1 · Weeks 1–4</p>
+                        <p class="text-lg font-bold text-team-dark mt-0.5">Build the habit</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-700"><li>Box breathing, 5 min every day</li><li>Set your bedtime and stick to it</li><li>Pick your release action and cue word</li></ul>
+                    </div>
+                    <div data-mental-phase="2" class="mental-phase bg-white rounded-xl shadow-sm border-2 border-gray-200 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Phase 2 · Weeks 5–8</p>
+                        <p class="text-lg font-bold text-team-dark mt-0.5">See it</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-700"><li>Keep breathing daily</li><li>Visualization 3 times a week: clean mechanics</li><li>Practice your reset sigh during catch play</li></ul>
+                    </div>
+                    <div data-mental-phase="3" class="mental-phase bg-white rounded-xl shadow-sm border-2 border-gray-200 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Phase 3 · Weeks 9–12</p>
+                        <p class="text-lg font-bold text-team-dark mt-0.5">Talk to yourself right</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-700"><li>Swap negative self-talk for what to do</li><li>Full release, reset, refocus between long-toss throws</li><li>Visualize long toss the night before</li></ul>
+                    </div>
+                    <div data-mental-phase="4" class="mental-phase bg-white rounded-xl shadow-sm border-2 border-gray-200 p-4">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Phase 4 · Weeks 13–16</p>
+                        <p class="text-lg font-bold text-team-dark mt-0.5">Compete</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-gray-700"><li>Reset routine before every bullpen pitch</li><li>Visualize each bullpen the night before</li><li>Add trouble to pens: 3-ball counts, runners on</li></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="coach-ai" class="tab-content">
             <div class="mb-6 text-center">
                 <div class="inline-block bg-team-primary p-4 rounded-full mb-4 shadow-lg border-4 border-team-accent">
@@ -1674,7 +1917,7 @@
         const chatForm = document.getElementById('ai-chat-form');
         const chatInput = document.getElementById('chat-input');
         const chatHistoryContainer = document.getElementById('chat-history');
-        const TAB_NAMES = { overview: 'Phases', calendar: 'Calendar', training: 'Strength', armcare: 'Arm Care', throwing: 'Throwing', nutrition: 'Nutrition' };
+        const TAB_NAMES = { overview: 'Phases', calendar: 'Calendar', training: 'Strength', armcare: 'Arm Care', throwing: 'Throwing', nutrition: 'Nutrition', mental: 'Mental' };
 
         function scrollToBottom() { chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight; }
         function escapeHtml(s) {
@@ -1703,7 +1946,7 @@
         }
 
         // ---- matching ----
-        const STOP = new Set('a an the i im i\'m me my mine we our you your is are am was were be been do does did doing to of in on at for with and or but if so it its it\'s this that these those what whats what\'s how when where which who why can could should would will shall may might need much many get got have has had any some there their them they he she his her just really like about up out from into than then also coach please hey yo ok okay know tell want go'.split(' '));
+        const STOP = new Set('a an the i im i\'m me my mine we our you your is are am was were be been do does did doing to of in on at for with and or but if so it its it\'s this that these those what whats what\'s how when where which who why can could should would will shall may might need much many get got have has had any some there their them they he she his her just really like about up out from into than then also coach please hey yo ok okay know tell want go after'.split(' '));
         const SYN = { pen: 'bullpen', pens: 'bullpen', bullpens: 'bullpen', lifting: 'lift', weights: 'lift', weight_room: 'lift', gym: 'lift', workout: 'workout', workouts: 'workout', drink: 'water', hydrate: 'water', hydration: 'water', food: 'eat', foods: 'eat', meal: 'eat', meals: 'eat', eating: 'eat', fb: 'fastball', curve: 'curveball', curves: 'curveball', slider: 'curveball', sliders: 'curveball', breaking: 'curveball', change: 'changeup', changeups: 'changeup', frosh: 'freshman', freshmen: 'freshman', jv: 'freshman', bulk: 'gain', bulking: 'gain', bigger: 'gain', lose: 'lean', cut: 'lean', cutting: 'lean', plank: 'plank', planks: 'plank', jbands: 'jband', 'j-band': 'jband', 'j-bands': 'jband', rfess: 'bulgarian', throws: 'throw', throwing: 'throw', threw: 'throw', mound: 'mound', mounds: 'mound', long_toss: 'longtoss' };
         function stem(w) {
             if (SYN[w]) return SYN[w];
@@ -1904,12 +2147,12 @@
         });
 
         // --- Deep links: open a tab from the link's #anchor ---
-        const hashMap = { bands: 'band-routine', plyo: 'plyo-routine', phases: 'overview', overview: 'overview', calendar: 'calendar', schedule: 'calendar', strength: 'training', training: 'training', armcare: 'armcare', throwing: 'throwing', nutrition: 'nutrition', coach: 'coach-ai', ask: 'coach-ai', 'coach-ai': 'coach-ai' };
+        const hashMap = { bands: 'band-routine', plyo: 'plyo-routine', phases: 'overview', overview: 'overview', calendar: 'calendar', schedule: 'calendar', strength: 'training', training: 'training', armcare: 'armcare', throwing: 'throwing', nutrition: 'nutrition', mental: 'mental', mind: 'mental', sleep: 'mental-sleep', breathe: 'mental-breathe', coach: 'coach-ai', ask: 'coach-ai', 'coach-ai': 'coach-ai' };
         function openFromHash() {
             const h = (location.hash || '').slice(1).toLowerCase();
             const w = h.match(/^week(\d{1,2})$/);
             if (w && +w[1] >= 1 && +w[1] <= 16) { openWeek(+w[1]); return; }
-            const t = hashMap[h]; if (t === 'band-routine' || t === 'plyo-routine') { jumpTo(t); return; } if (t) switchTab(t);
+            const t = hashMap[h]; if (t === 'band-routine' || t === 'plyo-routine') { jumpTo(t); return; } if (t && t.startsWith('mental-')) { mentalJump(t); return; } if (t) switchTab(t);
         }
         openFromHash();
         window.addEventListener('hashchange', openFromHash);
@@ -1947,6 +2190,105 @@
         document.getElementById('install-close').addEventListener('click', () => { installModal.hidden = true; });
         installModal.addEventListener('click', e => { if (e.target === installModal) installModal.hidden = true; });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') installModal.hidden = true; });
+
+        // --- Mental game & sleep ---
+        function mentalJump(id) {
+            switchTab('mental');
+            setTimeout(() => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+        }
+        document.addEventListener('click', e => { const m = e.target.closest('[data-mental-go]'); if (m) mentalJump(m.dataset.mentalGo); });
+        // Daily mental rep for the Today card: follows the 16-week mental plan
+        const MIND_REPS = {
+            1: [['Box breathing, 5 min', 'mental-breathe'], ['Box breathing, 5 min', 'mental-breathe'], ['Pick your release action and cue word', 'mental-wave']],
+            2: [['Box breathing, 5 min', 'mental-breathe'], ['Visualize clean mechanics, 5 min', 'mental-see'], ['Reset sigh between catch-play throws', 'mental-wave']],
+            3: [['Visualize tomorrow\'s long toss', 'mental-see'], ['Release, reset, refocus between throws', 'mental-wave'], ['Box breathing, 5 min', 'mental-breathe']],
+            4: [['Reset routine before every pitch', 'mental-wave'], ['Visualize your next bullpen', 'mental-see'], ['Box breathing, 5 min', 'mental-breathe']]
+        };
+        function mindRep(week) {
+            const list = MIND_REPS[Math.min(4, Math.max(1, Math.ceil(week / 4)))];
+            const n = Math.floor(Date.now() / 86400000);
+            return list[n % list.length];
+        }
+        const fmtClock = mins => { mins = ((mins % 1440) + 1440) % 1440; const h = Math.floor(mins / 60), m = mins % 60; return ((h % 12) || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'AM' : 'PM'); };
+        function bedtimeFor(wake) {
+            const m = /^(\d{1,2}):(\d{2})$/.exec(wake || ''); if (!m) return null;
+            const w = +m[1] * 60 + +m[2];
+            return { lights: fmtClock(w - 9 * 60 - 15), screens: fmtClock(w - 9 * 60 - 60) };
+        }
+        function mindRowHtml(week) {
+            const [rep, target] = mindRep(week);
+            const wake = store('wake-time');
+            const bt = wake ? bedtimeFor(wake) : null;
+            return `<div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button type="button" data-mental-go="${target}" class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/15 border border-white/30 hover:bg-white/25 text-sm"><span class="min-w-0"><span class="block text-xs font-bold uppercase tracking-wider text-team-accent">Mental rep</span>${escapeHtml(rep)}</span><i class="fa-solid fa-brain flex-shrink-0"></i></button>
+                <button type="button" data-mental-go="mental-sleep" class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/15 border border-white/30 hover:bg-white/25 text-sm"><span class="min-w-0"><span class="block text-xs font-bold uppercase tracking-wider text-team-accent">Tonight</span>${bt ? 'Lights out by ' + bt.lights : 'Set your bedtime: aim for 8–10 hrs'}</span><i class="fa-solid fa-moon flex-shrink-0"></i></button>
+            </div>`;
+        }
+        (function mentalTab() {
+            // Highlight the current phase
+            if (SEASON && SEASON.week) {
+                const ph = Math.ceil(SEASON.week / 4);
+                const card = document.querySelector(`[data-mental-phase="${ph}"]`);
+                if (card) { card.classList.remove('border-gray-200'); card.classList.add('border-team-primary', 'ring-2', 'ring-team-accent'); card.insertAdjacentHTML('afterbegin', '<span class="inline-block mb-2 text-xs font-bold bg-team-accent text-team-onaccent px-2 py-0.5 rounded-full">You are here</span>'); }
+            }
+            // Bedtime calculator
+            const wakeEl = document.getElementById('wake-time');
+            if (wakeEl) {
+                const saved = store('wake-time'); if (saved) wakeEl.value = saved;
+                const upd = () => { const bt = bedtimeFor(wakeEl.value); if (!bt) return; document.getElementById('bedtime-out').textContent = bt.lights; document.getElementById('screens-out').textContent = bt.screens; };
+                wakeEl.addEventListener('change', () => {
+                    store('wake-time', wakeEl.value); upd();
+                    const bt = bedtimeFor(wakeEl.value), t = document.querySelector('#season-banner [data-mental-go="mental-sleep"] > span');
+                    if (bt && t) t.innerHTML = '<span class="block text-xs font-bold uppercase tracking-wider text-team-accent">Tonight</span>Lights out by ' + bt.lights;
+                });
+                wakeEl.addEventListener('input', upd);
+                upd();
+            }
+            // Breathing timer
+            const MODES = {
+                box: { desc: 'In through your nose for 4, hold 4, out through your mouth for 4, hold 4. Calms you down and sharpens focus.', steps: [['Breathe in', 4, 1], ['Hold', 4, 1], ['Breathe out', 4, .55], ['Hold', 4, .55]] },
+                sigh: { desc: 'Two breaths in through your nose (a big one, then a short top-off), then one long, slow breath out through your mouth. The fastest way to calm down.', steps: [['Breathe in', 2, .85], ['In a little more', 1, 1], ['Long breath out', 6, .55], ['Rest', 1, .55]] }
+            };
+            const ring = document.getElementById('breath-ring'), phaseEl = document.getElementById('breath-phase'), countEl = document.getElementById('breath-count');
+            const startBtn = document.getElementById('breath-start'), leftEl = document.getElementById('breath-left'), minsEl = document.getElementById('breath-mins'), descEl = document.getElementById('breath-desc');
+            if (!ring) return;
+            let mode = 'box', timer = null, endAt = 0, wakeLock = null;
+            const paintModes = () => document.querySelectorAll('.breath-mode').forEach(b => {
+                const on = b.dataset.breathMode === mode; b.setAttribute('aria-pressed', on);
+                b.className = 'breath-mode text-sm font-bold px-3 py-2 rounded-lg border-2 ' + (on ? 'bg-team-primary border-team-primary text-white' : 'bg-white border-gray-200 text-gray-700 hover:border-team-primary');
+            });
+            const setMode = m => { mode = m; descEl.textContent = MODES[m].desc; paintModes(); if (timer) stop(); };
+            document.querySelectorAll('.breath-mode').forEach(b => b.addEventListener('click', () => setMode(b.dataset.breathMode)));
+            setMode('box');
+            function stop(done) {
+                clearInterval(timer); timer = null;
+                ring.style.transitionDuration = '1s'; ring.style.transform = 'scale(.55)';
+                phaseEl.textContent = done ? 'Nice work' : 'Ready'; countEl.innerHTML = done ? '<i class="fa-solid fa-check"></i>' : '&nbsp;';
+                leftEl.textContent = done ? 'That\'s one rep for your mental game.' : '';
+                startBtn.innerHTML = '<i class="fa-solid fa-play mr-1.5"></i>Start';
+                try { wakeLock && wakeLock.release(); } catch {} wakeLock = null;
+            }
+            function start() {
+                const steps = MODES[mode].steps; let i = -1, left = 0;
+                endAt = Date.now() + (+minsEl.value) * 60000;
+                startBtn.innerHTML = '<i class="fa-solid fa-stop mr-1.5"></i>Stop';
+                try { navigator.wakeLock && navigator.wakeLock.request('screen').then(l => { wakeLock = l; }).catch(() => {}); } catch {}
+                const tick = () => {
+                    const rem = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+                    if (left <= 0) {
+                        if (rem <= 0 && i === steps.length - 1) { stop(true); return; }
+                        i = (i + 1) % steps.length; const st = steps[i]; left = st[1];
+                        phaseEl.textContent = st[0];
+                        ring.style.transitionDuration = st[1] + 's'; ring.style.transform = 'scale(' + st[2] + ')';
+                    }
+                    countEl.textContent = left; left--;
+                    leftEl.textContent = rem > 0 ? Math.floor(rem / 60) + ':' + String(rem % 60).padStart(2, '0') + ' left' : 'Last breath…';
+                };
+                tick(); timer = setInterval(tick, 1000);
+            }
+            startBtn.addEventListener('click', () => timer ? stop() : start());
+            document.addEventListener('visibilitychange', () => { if (document.hidden && timer) stop(); });
+        })();
 
         // --- Today card on the Phases tab; Calendar opens to the current week with today highlighted ---
         const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -1996,6 +2338,7 @@
                         <span class="text-xs font-bold bg-white/15 border border-white/30 px-2.5 py-1 rounded-full whitespace-nowrap">Week ${SEASON.week} of 16 · ${escapeHtml(wk.phase)}</span>
                     </div>
                     ${rest ? `<p class="mt-3 text-sm opacity-90">Rest day. Recover, eat well and get to bed early.</p>` : `<ul class="mt-3 space-y-2">${todayTasksHtml(day)}</ul>`}
+                    ${mindRowHtml(SEASON.week)}
                     ${tDay ? `<p class="mt-3 text-sm opacity-90"><span class="font-bold text-team-accent">Tomorrow:</span> ${escapeHtml(stripHtml(tDay.tasks[0]))}</p>` : ''}
                     <div class="flex flex-wrap gap-2 mt-4"><button type="button" data-week-open="${SEASON.week}" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>Full week</button>${checkBtn}</div>
                 </div>`;
@@ -2008,6 +2351,8 @@
                     <p class="mt-1 text-sm opacity-90">Week 1 is Rest &amp; Foundation: no throwing. Here's your first day:</p>
                     <p class="mt-3 font-bold">${escapeHtml(stripHtml(day.tasks[0]))}</p>
                     <ul class="mt-2 space-y-2">${todayTasksHtml(day)}</ul>
+                    <p class="mt-4 text-xs uppercase tracking-wider font-bold text-team-accent">Start now</p>
+                    ${mindRowHtml(1)}
                     <div class="flex flex-wrap gap-2 mt-4"><button type="button" data-week-open="1" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>Preview Week 1</button></div>
                 </div>`;
             } else if (SEASON.done) {
