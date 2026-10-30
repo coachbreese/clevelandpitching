@@ -161,6 +161,8 @@ window.COACH_FAQ = [
     a: "Carbs are your main fuel: sweet or white potatoes, brown or white rice, oatmeal, quinoa, whole-wheat pasta or bread, beans, bananas and berries." },
   { q: "What are healthy fats?", k: "fats fat healthy avocado nuts", tab: "nutrition",
     a: "For hormone and joint health: avocados, mixed nuts, chia or flax seeds, olive oil, peanut butter, salmon and cheese." },
+  { q: "Where is the pitcher profile?", k: "pitcher profile form goals questionnaire survey intake individual plan fill out", tab: "overview",
+    a: "It's a 3-minute form that tells your coach your goals, your pitches and how your arm feels, so your plan fits you. Open it from the card on the **Phases** tab, or go to **profile.html** on this site. You can come back and update it anytime." },
   // ---------- MENTAL GAME & SLEEP ----------
   { q: "How do I get better at the mental game?", k: "mental game tips mindset mind focus confidence psychology mentally tough toughness head mental side", tab: "mental",
     a: "Train your mind a few minutes every day, just like your arm:\n**Breathe:** 5 minutes of box breathing daily.\n**Don't ride the wave:** release, reset, refocus between every pitch.\n**See it first:** visualize pitches the night before you throw.\n**Sleep:** 8-10 hours a night.\nThe Mental tab has a breathing timer and a plan for each phase." },

@@ -2370,6 +2370,21 @@
                 const t = e.target.closest('[data-tab-go]'); if (t) { switchTab(t.dataset.tabGo); window.scrollTo({ top: 0, behavior: 'smooth' }); }
             });
         })();
+        // Pitcher profile: a nudge on the Phases tab until the athlete has sent one
+        (function profileCard() {
+            const ban = document.getElementById('season-banner');
+            if (!ban || !window.TEAM.trackingUrl) return;
+            let sent = ''; try { sent = JSON.parse(localStorage.getItem('profile-sent') || '""'); } catch {}
+            const el = document.createElement('div');
+            el.className = 'mb-6';
+            el.innerHTML = sent
+                ? `<a href="profile.html" class="flex items-center justify-between gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm shadow-sm hover:border-team-primary"><span class="min-w-0 text-gray-700"><i class="fa-solid fa-id-card text-team-primary mr-2"></i>Pitcher profile sent. Goals or health changed? <strong class="text-team-primary">Update it</strong></span><i class="fa-solid fa-chevron-right text-gray-400"></i></a>`
+                : `<a href="profile.html" class="flex items-center gap-4 bg-white border-2 border-team-accent rounded-xl p-4 shadow-md hover:brightness-95">
+                    <span class="flex-shrink-0 w-12 h-12 rounded-full bg-team-accent text-team-onaccent flex items-center justify-center text-xl"><i class="fa-solid fa-id-card"></i></span>
+                    <span class="min-w-0 flex-1"><span class="block font-bold text-team-dark">Fill out your pitcher profile</span><span class="block text-sm text-gray-600">3 minutes. Tell ${COACH} your goals so your plan fits you.</span></span>
+                    <i class="fa-solid fa-chevron-right text-team-primary"></i></a>`;
+            ban.insertAdjacentElement('afterend', el);
+        })();
         // Highlight today's column when the current week is open in the Calendar
         function markToday(n) {
             if (!SEASON || SEASON.week !== n) return;

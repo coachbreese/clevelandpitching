@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Pitcher Profile</title>
+    <meta name="theme-color" content="#006400">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="team.js"></script>
+    <script>
+        (function () {
+            const T = window.TEAM = Object.assign({ school: 'Cleveland', mascot: 'Warriors', initials: 'CW', coachName: 'Coach Breese', coachEmail: 'coachjbreese@gmail.com', primary: '#006400', accent: '#FFD700', trackingUrl: '' }, window.TEAM || {});
+            T.fullName = (T.school + ' ' + T.mascot).trim();
+            const hex = h => { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return isNaN(n) ? [0, 100, 0] : [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+            const toHex = a => '#' + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+            const mix = (a, b, t) => toHex(hex(a).map((v, i) => v + (hex(b)[i] - v) * t));
+            const lum = c => { const v = hex(c).map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+            const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+            const C = window.TEAM_COLORS = { primary: T.primary, accent: T.accent, dark: T.dark || mix(T.primary, '#000000', 0.25), light: T.light || mix(T.primary, '#ffffff', 0.9) };
+            C.onAccent = contrast(C.accent, C.dark) >= 4.5 ? C.dark : (contrast(C.accent, '#ffffff') >= contrast(C.accent, C.dark) ? '#ffffff' : C.dark);
+            C.accentOnPrimary = contrast(C.accent, C.primary) >= 4.5 ? C.accent : '#ffffff';
+            document.title = T.fullName + ' Pitcher Profile';
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script>
+        const TC = window.TEAM_COLORS;
+        tailwind.config = { theme: { extend: {
+            colors: { team: { primary: TC.primary, accent: TC.accent, light: TC.light, dark: TC.dark, onaccent: TC.onAccent, accentonprimary: TC.accentOnPrimary } },
+            fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'] }
+        } } };
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+        .site-header { padding-top: env(safe-area-inset-top, 0px); }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--focus, #FFD700); outline-offset: 2px; }
+        [hidden] { display: none !important; }
+        .step { animation: fade .2s ease-out; }
+        @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .step { animation: none; } }
+        .bar-fill { transition: width .25s ease; }
+        footer { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <header class="site-header bg-team-primary text-white shadow-md">
+        <div class="max-w-2xl mx-auto gutter py-4 flex items-center gap-4">
+            <div id="badge" class="flex-shrink-0 w-14 h-14 rounded-xl bg-white p-1 shadow flex items-center justify-center">
+                <img id="logo" alt="" class="block w-full h-full object-contain">
+            </div>
+            <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-team-accentonprimary" id="team-name">Cleveland Warriors</p>
+                <h1 class="text-2xl font-extrabold leading-tight">Pitcher Profile</h1>
+            </div>
+        </div>
+        <div class="bg-team-dark">
+            <div class="max-w-2xl mx-auto gutter py-2.5">
+                <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
+                    <span id="step-label">Step 1 of 5 · About you</span>
+                    <span id="step-time" class="opacity-80">About 3 min</span>
+                </div>
+                <div class="h-2 rounded-full bg-white/20 overflow-hidden"><div id="bar" class="bar-fill h-full rounded-full bg-team-accent" style="width:20%"></div></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-2xl mx-auto gutter py-6">
+        <p id="intro" class="text-gray-600 mb-5"><span id="coach-intro">Coach Breese</span> uses this to build <strong>your</strong> plan: what you work on, how hard you push, and what to watch for. Tap your answers. Most questions are one tap.</p>
+        <div id="no-sheet" hidden class="mb-5 bg-yellow-50 border border-yellow-300 text-yellow-900 rounded-lg p-3 text-sm"><i class="fa-solid fa-circle-info mr-1"></i>This form isn't connected to your coach's sheet yet. Your coach needs to add the tracking link in team.js.</div>
+        <form id="form" novalidate>
+            <div id="steps"></div>
+            <p id="err" class="text-sm font-semibold text-red-700 mt-4" role="alert" aria-live="assertive"></p>
+            <div class="flex items-center justify-between gap-3 mt-6">
+                <button type="button" id="back" class="px-5 py-3 rounded-lg font-bold text-team-primary bg-white border-2 border-gray-200 hover:border-team-primary"><i class="fa-solid fa-arrow-left mr-1.5"></i>Back</button>
+                <button type="submit" id="next" class="flex-1 sm:flex-none sm:min-w-[200px] px-6 py-3 rounded-lg font-bold bg-team-accent text-team-onaccent shadow hover:brightness-95">Next<i class="fa-solid fa-arrow-right ml-1.5"></i></button>
+            </div>
+            <p class="text-xs text-gray-500 mt-4 text-center"><i class="fa-solid fa-floppy-disk mr-1"></i>Your answers save on this phone as you go.</p>
+        </form>
+
+        <div id="done" hidden class="step text-center bg-white rounded-xl shadow-md border-t-4 border-team-primary p-6 md:p-8">
+            <div class="w-16 h-16 mx-auto rounded-full bg-team-primary text-white flex items-center justify-center text-3xl mb-4"><i class="fa-solid fa-check"></i></div>
+            <h2 class="text-2xl font-extrabold text-team-primary">Sent. Thanks, <span id="done-name"></span>!</h2>
+            <p class="text-gray-600 mt-2" id="done-msg"></p>
+            <div id="done-pain" hidden class="mt-4 text-left bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i><strong>You said something hurts right now.</strong> Don't throw until you've talked to your coach or athletic trainer in person.</div>
+            <div class="flex flex-wrap justify-center gap-3 mt-6">
+                <a href="./" class="px-5 py-3 rounded-lg font-bold bg-team-accent text-team-onaccent shadow hover:brightness-95"><i class="fa-solid fa-house mr-1.5"></i>Back to the app</a>
+                <button type="button" id="edit" class="px-5 py-3 rounded-lg font-bold text-team-primary bg-white border-2 border-gray-200 hover:border-team-primary"><i class="fa-solid fa-pen mr-1.5"></i>Change my answers</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-xs text-gray-500 pt-6 gutter">Questions? Email <span class="font-semibold select-all" id="coach-email"></span></footer>
+
+<script>
+(function () {
+    const T = window.TEAM;
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const get = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+    const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+    const getRaw = k => { try { return localStorage.getItem(k) || ''; } catch { return ''; } };
+    const URL_ = (T.trackingUrl || '').trim();
+
+    // Branding
+    document.getElementById('team-name').textContent = T.fullName;
+    document.getElementById('coach-intro').textContent = T.coachName;
+    document.getElementById('coach-email').textContent = T.coachEmail;
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', TEAM_COLORS.primary);
+    document.documentElement.style.setProperty('--focus', TEAM_COLORS.accent);
+    const logo = document.getElementById('logo');
+    logo.alt = T.fullName + ' logo';
+    logo.onerror = () => { document.getElementById('badge').innerHTML = `<span class="text-xl font-extrabold text-team-primary">${esc(T.initials || '')}</span>`; };
+    logo.src = T.logo || 'icons/logo.png';
+    if (!URL_) document.getElementById('no-sheet').hidden = false;
+
+    // ---------- Questions ----------
+    const PITCHES = ['4-seam fastball', '2-seam / sinker', 'Changeup', 'Curveball', 'Slider', 'Cutter', 'Splitter'];
+    const AREAS = ['Shoulder', 'Elbow', 'Forearm', 'Wrist / hand', 'Back', 'Hip / legs'];
+    const STEPS = [
+        { title: 'About you', qs: [
+            { id: 'name', type: 'text', label: 'First and last name', req: true, ph: 'e.g. Jake Miller', auto: 'name' },
+            { id: 'grade', type: 'one', label: 'Grade this school year', req: true, opts: ['Freshman', 'Sophomore', 'Junior', 'Senior'] },
+            { id: 'throws', type: 'one', label: 'You throw', req: true, opts: ['Right', 'Left'] },
+            { id: 'level', type: 'one', label: 'Last spring you pitched for', req: true, opts: ['Middle school', 'Freshman', 'JV', 'Varsity', 'Travel / club only', "Didn't pitch"] },
+            { id: 'role', type: 'one', label: 'Your role', opts: ['Starter', 'Reliever', 'Both', 'Not sure yet'] },
+            { id: 'positions', type: 'many', label: 'Other positions you play', hint: 'optional', opts: ['Pitcher only', 'C', '1B', '2B', 'SS', '3B', 'OF'] },
+            { id: 'size', type: 'size', label: 'Height and weight', hint: 'optional, helps with your nutrition targets' }
+        ]},
+        { title: 'Your pitches', qs: [
+            { id: 'pitches', type: 'many', label: 'Pitches you throw in games', req: true, opts: PITCHES, other: 'pitchesOther' },
+            { id: 'best', type: 'one', label: 'Your best pitch', opts: () => (ans.pitches || []).concat(ans.pitchesOther ? [ans.pitchesOther] : []), empty: 'Pick your pitches above first.' },
+            { id: 'velo', type: 'velo', label: 'Fastball speed', hint: 'optional, your best guess is fine' }
+        ]},
+        { title: 'Your goals', qs: [
+            { id: 'goals', type: 'many', label: 'What do you most want to work on?', hint: 'pick up to 3', max: 3, req: true, opts: ['Throw harder', 'Throw more strikes', 'Add a new pitch', 'Sharpen my off-speed', 'Repeat my mechanics', 'Get stronger / add size', 'Stay healthy', 'Go deeper into games', 'Hold runners / pickoffs', 'Field my position', 'Mental game', 'Earn a bigger role'] },
+            { id: 'newPitch', type: 'one', label: 'Which new pitch?', show: () => (ans.goals || []).includes('Add a new pitch'), opts: () => PITCHES.filter(p => !(ans.pitches || []).includes(p)).concat(['Not sure']) },
+            { id: 'goalText', type: 'text', label: 'Your #1 goal for this season, in your own words', hint: 'optional', ph: 'e.g. Make varsity and start a conference game' },
+            { id: 'college', type: 'one', label: 'Interested in pitching in college?', opts: ['Yes', 'Maybe', 'No', 'Not sure yet'] }
+        ]},
+        { title: 'Last season', qs: [
+            { id: 'worked', type: 'area', label: 'What worked well for you last season?', ph: 'A pitch, a drill, a routine, a mindset...' },
+            { id: 'didnt', type: 'area', label: "What didn't work, or what held you back?", ph: 'Walks, tired arm, losing velo late, nerves...' },
+            { id: 'arm', type: 'one', label: 'Your arm in the last 12 months', req: true, opts: ['No issues', 'Sore sometimes, normal', 'Pain that made me stop or miss time', 'Saw a doctor or PT for it'] },
+            { id: 'armWhere', type: 'many', label: 'Where?', show: () => ans.arm && ans.arm !== 'No issues', opts: AREAS },
+            { id: 'painNow', type: 'one', label: 'Does anything hurt right now when you throw?', req: true, opts: ['No', 'Yes'], warnOn: 'Yes', warn: "Don't throw until you've talked to your coach or athletic trainer in person. Your coach will see this as soon as you send it." }
+        ]},
+        { title: 'Your off-season', qs: [
+            { id: 'sports', type: 'many', label: 'Other sports this winter', opts: ['None', 'Basketball', 'Wrestling', 'Football', 'Soccer', 'Hockey', 'Swimming', 'Other'], solo: 'None' },
+            { id: 'gym', type: 'many', label: 'Where can you lift?', req: true, opts: ['School weight room', 'Home gym', 'Commercial gym', 'No gym access'], solo: 'No gym access' },
+            { id: 'days', type: 'one', label: 'Days a week you can train', req: true, opts: ['2', '3', '4', '5', '6'] },
+            { id: 'privateCoach', type: 'one', label: 'Do you work with a private pitching coach or academy?', opts: ['Yes', 'No'] },
+            { id: 'sleep', type: 'one', label: 'Sleep on a school night', opts: ['Under 6 hrs', '6–7 hrs', '7–8 hrs', '8–9 hrs', '9+ hrs'] },
+            { id: 'notes', type: 'area', label: 'Anything else your coach should know?', hint: 'optional', ph: 'Schedule, injuries, questions...' }
+        ]}
+    ];
+
+    const ans = Object.assign({}, get('profile-draft-v1', {}));
+    if (!ans.name) ans.name = getRaw('ask-coach-name');
+    let step = 0;
+    const save = () => put('profile-draft-v1', ans);
+    const opts = q => typeof q.opts === 'function' ? q.opts() : q.opts;
+
+    const chip = (q, o, on) => `<button type="button" data-q="${q.id}" data-v="${esc(o)}" aria-pressed="${on}" class="px-4 py-2.5 rounded-full border-2 text-sm font-semibold transition-colors ${on ? 'bg-team-primary border-team-primary text-white' : 'bg-white border-gray-300 text-gray-700 hover:border-team-primary'}">${on && q.type === 'many' ? '<i class="fa-solid fa-check mr-1"></i>' : ''}${esc(o)}</button>`;
+    const label = q => `<p class="font-bold text-gray-800 mb-2">${esc(q.label)}${q.req ? ' <span class="text-red-600" aria-hidden="true">*</span>' : ''}${q.hint ? ` <span class="font-normal text-gray-500 text-sm">(${esc(q.hint)})</span>` : ''}</p>`;
+    const inputCls = 'w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-team-primary focus:border-team-primary outline-none';
+
+    function qHtml(q) {
+        if (q.show && !q.show()) return '';
+        let body = '';
+        if (q.type === 'text') body = `<input id="f-${q.id}" data-in="${q.id}" type="text" maxlength="120" ${q.auto ? `autocomplete="${q.auto}"` : ''} placeholder="${esc(q.ph || '')}" value="${esc(ans[q.id] || '')}" class="${inputCls}">`;
+        else if (q.type === 'area') body = `<textarea id="f-${q.id}" data-in="${q.id}" rows="2" maxlength="600" placeholder="${esc(q.ph || '')}" class="${inputCls} text-sm">${esc(ans[q.id] || '')}</textarea>`;
+        else if (q.type === 'one' || q.type === 'many') {
+            const list = opts(q);
+            if (!list.length) body = `<p class="text-sm text-gray-500">${esc(q.empty || '')}</p>`;
+            else body = `<div class="flex flex-wrap gap-2" role="group" aria-label="${esc(q.label)}">${list.map(o => chip(q, o, q.type === 'one' ? ans[q.id] === o : (ans[q.id] || []).includes(o))).join('')}</div>`;
+            if (q.other) body += `<input data-in="${q.other}" type="text" maxlength="40" placeholder="Other pitch (optional)" value="${esc(ans[q.other] || '')}" class="${inputCls} mt-2 text-sm sm:max-w-xs">`;
+            if (q.warnOn && ans[q.id] === q.warnOn) body += `<div class="mt-3 flex gap-2 items-start bg-red-50 border border-red-200 text-red-800 rounded-lg p-3 text-sm"><i class="fa-solid fa-triangle-exclamation mt-0.5"></i><p>${esc(q.warn)}</p></div>`;
+        } else if (q.type === 'size') {
+            const ft = ans.heightFt || '', inch = ans.heightIn ?? '';
+            body = `<div class="flex flex-wrap items-center gap-2">
+                <select data-in="heightFt" aria-label="Height, feet" class="px-3 py-2.5 rounded-lg border border-gray-300 bg-white"><option value="">ft</option>${[4, 5, 6, 7].map(v => `<option ${String(ft) === String(v) ? 'selected' : ''}>${v}</option>`).join('')}</select>
+                <select data-in="heightIn" aria-label="Height, inches" class="px-3 py-2.5 rounded-lg border border-gray-300 bg-white"><option value="">in</option>${Array.from({ length: 12 }, (_, i) => `<option ${String(inch) === String(i) ? 'selected' : ''}>${i}</option>`).join('')}</select>
+                <span class="w-2"></span>
+                <input data-in="weight" type="number" inputmode="numeric" min="80" max="350" placeholder="lbs" aria-label="Weight in pounds" value="${esc(ans.weight || '')}" class="w-24 px-3 py-2.5 rounded-lg border border-gray-300 bg-white"><span class="text-sm text-gray-600">lbs</span>
+            </div>`;
+        } else if (q.type === 'velo') {
+            const unk = ans.veloUnknown;
+            body = `<div class="flex flex-wrap items-center gap-2">
+                <input data-in="velo" type="number" inputmode="numeric" min="40" max="100" placeholder="mph" aria-label="Fastball speed in mph" value="${esc(unk ? '' : ans.velo || '')}" ${unk ? 'disabled' : ''} class="w-24 px-3 py-2.5 rounded-lg border border-gray-300 bg-white disabled:bg-gray-100"><span class="text-sm text-gray-600">mph</span>
+                <button type="button" data-flag="veloUnknown" aria-pressed="${!!unk}" class="ml-1 px-4 py-2.5 rounded-full border-2 text-sm font-semibold ${unk ? 'bg-team-primary border-team-primary text-white' : 'bg-white border-gray-300 text-gray-700 hover:border-team-primary'}">Never been clocked</button>
+            </div>`;
+        }
+        return `<div class="py-4 border-b border-gray-100 last:border-0" data-qwrap="${q.id}">${label(q)}${body}</div>`;
+    }
+
+    const stepsEl = document.getElementById('steps'), err = document.getElementById('err');
+    let first = true;
+    function render(focusTop) {
+        const s = STEPS[step];
+        stepsEl.innerHTML = `<div class="${focusTop || first ? 'step ' : ''}bg-white rounded-xl shadow-md border-t-4 border-team-primary px-4 md:px-6 py-2">
+            <h2 class="sr-only">${esc(s.title)}</h2>${s.qs.map(qHtml).join('')}</div>`;
+        document.getElementById('step-label').textContent = `Step ${step + 1} of ${STEPS.length} · ${s.title}`;
+        document.getElementById('step-time').textContent = step === 0 ? 'About 3 min' : step === STEPS.length - 1 ? 'Last step' : '';
+        document.getElementById('bar').style.width = ((step + 1) / STEPS.length * 100) + '%';
+        document.getElementById('back').style.visibility = step ? 'visible' : 'hidden';
+        document.getElementById('next').innerHTML = step === STEPS.length - 1 ? '<i class="fa-solid fa-paper-plane mr-1.5"></i>Send to ' + esc(T.coachName) : 'Next<i class="fa-solid fa-arrow-right ml-1.5"></i>';
+        document.getElementById('intro').hidden = step > 0;
+        if (focusTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+        first = false;
+    }
+
+    stepsEl.addEventListener('click', e => {
+        const b = e.target.closest('[data-q]');
+        if (b) {
+            const q = STEPS[step].qs.find(x => x.id === b.dataset.q), v = b.dataset.v;
+            if (q.type === 'one') ans[q.id] = ans[q.id] === v && !q.req ? '' : v;
+            else {
+                let cur = (ans[q.id] || []).slice();
+                if (cur.includes(v)) cur = cur.filter(x => x !== v);
+                else if (q.solo && v === q.solo) cur = [v];
+                else { cur = cur.filter(x => x !== q.solo); if (q.max && cur.length >= q.max) { err.textContent = `Pick up to ${q.max}. Tap one to remove it first.`; return; } cur.push(v); }
+                ans[q.id] = cur;
+            }
+            if (q.id === 'pitches' && ans.best && !opts(STEPS[1].qs[1]).includes(ans.best)) ans.best = '';
+            err.textContent = ''; save();
+            const y = window.scrollY; render(); window.scrollTo(0, y);
+            return;
+        }
+        const f = e.target.closest('[data-flag]');
+        if (f) { ans[f.dataset.flag] = !ans[f.dataset.flag]; if (ans.veloUnknown) ans.velo = ''; save(); const y = window.scrollY; render(); window.scrollTo(0, y); }
+    });
+    stepsEl.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.in; if (k) { ans[k] = e.target.value; save(); } });
+    stepsEl.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.in; if (k) { ans[k] = e.target.value; save(); } });
+
+    function missing() {
+        for (const q of STEPS[step].qs) {
+            if (!q.req || (q.show && !q.show())) continue;
+            const v = ans[q.id];
+            if (q.id === 'name') { if (!/\S+\s+\S+/.test((v || '').trim())) return [q, 'Add your first and last name.']; continue; }
+            if (q.id === 'pitches') { if (!(v || []).length && !(ans.pitchesOther || '').trim()) return [q, 'Tap at least one pitch you throw.']; continue; }
+            if (Array.isArray(v) ? !v.length : !v) return [q, 'Answer: ' + q.label.toLowerCase().replace(/\?$/, '') + '.'];
+        }
+        return null;
+    }
+
+    document.getElementById('back').addEventListener('click', () => { if (step) { step--; err.textContent = ''; render(true); } });
+    document.getElementById('form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const m = missing();
+        if (m) {
+            err.textContent = m[1];
+            const w = document.querySelector(`[data-qwrap="${m[0].id}"]`);
+            if (w) { w.scrollIntoView({ behavior: 'smooth', block: 'center' }); const i = w.querySelector('input,button'); if (i) setTimeout(() => i.focus({ preventScroll: true }), 300); }
+            return;
+        }
+        err.textContent = '';
+        if (step < STEPS.length - 1) { step++; render(true); return; }
+        await send();
+    });
+
+    let device = get('checkin-device', '');
+    if (!device) { device = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); put('checkin-device', device); }
+
+    async function send() {
+        const btn = document.getElementById('next');
+        if (!URL_) { err.textContent = "This form isn't connected to your coach's sheet yet. Tell " + T.coachName + '.'; return; }
+        const name = ans.name.trim().replace(/\s+/g, ' ');
+        try { localStorage.setItem('ask-coach-name', name); } catch {}
+        const list = k => (ans[k] || []).join(', ');
+        const height = ans.heightFt ? ans.heightFt + "'" + (ans.heightIn !== '' && ans.heightIn != null ? ans.heightIn + '"' : '') : '';
+        const p = {
+            type: 'profile', id: device, team: T.fullName, name,
+            grade: ans.grade || '', throws: ans.throws || '', level: ans.level || '', role: ans.role || '', positions: list('positions'),
+            height, weight: ans.weight || '',
+            pitches: [list('pitches'), (ans.pitchesOther || '').trim()].filter(Boolean).join(', '), best: ans.best || '',
+            velo: ans.veloUnknown ? 'Never clocked' : (ans.velo ? ans.velo + ' mph' : ''),
+            goals: list('goals'), newPitch: (ans.goals || []).includes('Add a new pitch') ? ans.newPitch || '' : '', goalText: ans.goalText || '', college: ans.college || '',
+            worked: ans.worked || '', didnt: ans.didnt || '', arm: ans.arm || '', armWhere: ans.arm && ans.arm !== 'No issues' ? list('armWhere') : '', painNow: ans.painNow || '',
+            sports: list('sports'), gym: list('gym'), days: ans.days || '', privateCoach: ans.privateCoach || '', sleep: ans.sleep || '', notes: ans.notes || '',
+            at: new Date().toISOString()
+        };
+        btn.disabled = true; btn.classList.add('opacity-60'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Sending…';
+        let ok = false;
+        try { const r = await fetch(URL_, { method: 'POST', body: JSON.stringify(p) }); const j = await r.json(); ok = !!(j && j.ok); }
+        catch { try { await fetch(URL_, { method: 'POST', mode: 'no-cors', body: JSON.stringify(p) }); ok = navigator.onLine; } catch {} }
+        btn.disabled = false; btn.classList.remove('opacity-60');
+        if (!ok) { render(); err.textContent = "Couldn't send. Check your signal and tap Send again. Your answers are saved."; return; }
+        put('profile-sent', p.at);
+        document.getElementById('form').hidden = true; document.getElementById('intro').hidden = true;
+        document.getElementById('done').hidden = false;
+        document.getElementById('done-name').textContent = name.split(' ')[0];
+        document.getElementById('done-msg').textContent = T.coachName + ' will use this to set up your individual plan. If anything changes, like a new goal or an injury, come back and update it.';
+        document.getElementById('done-pain').hidden = p.painNow !== 'Yes';
+        document.getElementById('step-label').textContent = 'Done'; document.getElementById('step-time').textContent = '';
+        document.getElementById('bar').style.width = '100%';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.getElementById('edit').addEventListener('click', () => { document.getElementById('done').hidden = true; document.getElementById('form').hidden = false; step = 0; render(true); });
+
+    render();
+})();
+</script>
+</body>
+</html>
