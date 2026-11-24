@@ -4,7 +4,7 @@ A 16-week pitcher off-season plan that installs like an app. Everything team-spe
 
 | File | What it does |
 |---|---|
-| `team.js` | **Team settings:** school, mascot, coach name and email, colors, season start date. The only file that differs between teams |
+| `team.js` | **Team settings:** school, mascot, coach name and email, colors, season start date, check-in sheet link |
 | `index.html` | The app: Phases, Calendar, Strength, Arm Care, Throwing, Nutrition and Ask Coach |
 | `faq.js` | Ask Coach questions and answers |
 | `manifest.webmanifest` | App name, colors and icons for installing on phones |
@@ -12,6 +12,20 @@ A 16-week pitcher off-season plan that installs like an app. Everything team-spe
 | `icons/` | Home-screen icons |
 | `setup.html` | Team setup tool (keep this on your own site only) |
 | `tracking/` | Weekly check-in script for Google Sheets and its setup guide |
+
+## Shared files vs. team files
+
+Every team runs the same app. Each team's repository holds the shared files plus its own settings.
+
+| Shared: identical in every team's repo | Team only: different in each repo |
+|---|---|
+| `index.html`, `profile.html`, `faq.js`, `sw.js`, `README.md`, `tracking/` | `team.js`, `manifest.webmanifest`, `icons/` |
+
+`setup.html` (the new-team tool) lives in the clevelandpitching repo only.
+
+**When the app changes:** update the shared files in every team's repo at the same time, and bump the `CACHE` name in `sw.js` (for example `pitching-v12` → `pitching-v13`) so phones pick up the new version. Never copy one team's `team.js`, `manifest.webmanifest` or `icons/` into another team's repo.
+
+**Teams today:** [clevelandpitching](https://coachbreese.github.io/clevelandpitching/) · [eforcepitching](https://coachbreese.github.io/eforcepitching/)
 
 ## Set up a new team (about 5 minutes)
 
