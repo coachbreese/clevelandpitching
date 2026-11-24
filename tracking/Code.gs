@@ -45,7 +45,8 @@ const PROFILE_COLS = [
 ];
 // Set to true to get an email every time a pitcher sends a profile (pain alerts always email if NOTIFY_EMAIL is set)
 const EMAIL_EVERY_PROFILE = false;
-const WEEKS = 16;
+const WEEKS = 16;      // weeks shown on the Summary tab at minimum (grows if a program runs longer)
+const MAX_WEEKS = 52;  // longest program a check-in can belong to (any program length up to a year works)
 
 /** Run once from the editor (select "setup", click Run) to create the tabs and approve access. */
 function setup() {
@@ -110,7 +111,10 @@ function doPost(e) {
     if (d.type === 'profile') return json_(saveProfile_(d));
     const name = clean_(d.name, 60);
     const week = Math.round(Number(d.week));
-    if (!name || !(week >= 1 && week <= WEEKS)) return json_({ ok: false, error: 'Missing name or week' });
+    if (!name || !(week >= 1 && week <= MAX_WEEKS)) return json_({ ok: false, error: 'Missing name or week' });
+    // Phase comes from the team's program in the app; older app versions don't send it
+    const sentPhase = Number(String(d.phase == null ? '' : d.phase).replace(/[^0-9]/g, ''));
+    const phase = sentPhase >= 1 && sentPhase <= 12 ? sentPhase : Math.ceil(week / 4);
     // Arm: 'good' | 'sore' | 'pain'. Older app versions only send a pain note.
     let level = ['good', 'sore', 'pain'].indexOf(d.arm) >= 0 ? d.arm : (clean_(d.pain, 500) ? 'sore' : 'good');
     const where = (Array.isArray(d.areas) ? d.areas : []).map(a => clean_(a, 30)).filter(String).slice(0, 8).join(', ');
@@ -119,7 +123,7 @@ function doPost(e) {
       new Date(),
       name,
       week,
-      Math.ceil(week / 4),
+      phase,
       d.lifts ? 'Yes' : 'No',
       d.throwing ? 'Yes' : 'No',
       d.armcare ? 'Yes' : 'No',
@@ -267,7 +271,7 @@ function dashboardData_() {
 
   read(LOG).forEach(r => {
     const p = person(r[1]); const w = Number(r[2]);
-    if (!p || !(w >= 1 && w <= WEEKS)) return;
+    if (!p || !(w >= 1 && w <= MAX_WEEKS)) return;
     const c = { lifts: r[4] === 'Yes', throwing: r[5] === 'Yes', armcare: r[6] === 'Yes', at: iso(r[0]),
       arm: String(r[10] || ''), where: String(r[11] || ''), note: String(r[8] || ''), extra: parseExtra_(r[12]) };
     c.done = (c.lifts ? 1 : 0) + (c.throwing ? 1 : 0) + (c.armcare ? 1 : 0);
@@ -289,7 +293,7 @@ function dashboardData_() {
   Object.keys(people).forEach(k => people[k].arm.sort((a, b) => (b.at || '').localeCompare(a.at || '')));
 
   return {
-    weeks: WEEKS,
+    weeks: Object.keys(people).reduce((m, k) => Math.max(m, ...Object.keys(people[k].checks).map(Number)), WEEKS),
     generated: iso(now), generatedLabel: Utilities.formatDate(now, tz, 'EEE MMM d, h:mm a'),
     sheetUrl: ss.getUrl(),
     athletes: Object.keys(people).sort().map(k => people[k])
@@ -314,6 +318,22 @@ function rebuildSummary_() {
 
   // athlete -> week -> { done: count of 3, pain }
   const people = {};
+  // How many weeks to show, and which phase each week belongs to (from the program the app sent)
+  let nWeeks = WEEKS;
+  const weekPhase = {};
+  rows.forEach(r => {
+    const w = Number(r[2]);
+    if (!(w >= 1 && w <= MAX_WEEKS)) return;
+    nWeeks = Math.max(nWeeks, w);
+    const ph = Number(r[3]);
+    if (ph >= 1 && ph <= 12) weekPhase[w] = ph;
+  });
+  const phaseOfWeek = w => weekPhase[w] || Math.ceil(w / 4);
+  const phases = [];
+  for (let w = 1; w <= nWeeks; w++) if (phases.indexOf(phaseOfWeek(w)) < 0) phases.push(phaseOfWeek(w));
+  phases.sort((a, b) => a - b);
+  const phaseLen = {};
+  for (let w = 1; w <= nWeeks; w++) phaseLen[phaseOfWeek(w)] = (phaseLen[phaseOfWeek(w)] || 0) + 1;
   rows.forEach(r => {
     const display = String(r[1]).trim();
     const key = display.toLowerCase();
@@ -346,20 +366,22 @@ function rebuildSummary_() {
   });
 
   const header = ['Athlete'];
-  for (let w = 1; w <= WEEKS; w++) header.push('Wk ' + w);
-  header.push('Weeks done', 'Phase 1', 'Phase 2', 'Phase 3', 'Phase 4', 'Arm flags');
+  for (let w = 1; w <= nWeeks; w++) header.push('Wk ' + w);
+  header.push('Weeks done');
+  phases.forEach(ph => header.push('Phase ' + ph));
+  header.push('Arm flags');
 
   const names = Object.keys(people).sort();
   const values = [header], colors = [header.map(() => '#e5e7eb')], notes = [header.map(() => '')];
   names.forEach(k => {
     const p = people[k];
     const v = [p.name], c = ['#ffffff'], n = [''];
-    let full = 0, flags = 0; const phaseFull = [0, 0, 0, 0];
-    for (let w = 1; w <= WEEKS; w++) {
+    let full = 0, flags = 0; const phaseFull = {};
+    for (let w = 1; w <= nWeeks; w++) {
       const x = p.weeks[w];
       let cell = '', color = '#ffffff', note = '';
       if (x) {
-        if (x.done === 3) { cell = '✓'; color = '#bbf7d0'; full++; phaseFull[Math.ceil(w / 4) - 1]++; }
+        if (x.done === 3) { cell = '✓'; color = '#bbf7d0'; full++; phaseFull[phaseOfWeek(w)] = (phaseFull[phaseOfWeek(w)] || 0) + 1; }
         else if (x.done >= 0) { cell = x.done + '/3'; color = '#fef08a'; }
         if (x.level === 2) { cell = (cell ? cell + ' ' : '') + '⚠'; color = '#fca5a5'; }
         else if (x.level === 1) { cell = (cell ? cell + ' ' : '') + '•'; color = '#fed7aa'; }
@@ -367,8 +389,8 @@ function rebuildSummary_() {
       }
       v.push(cell); c.push(color); n.push(note);
     }
-    v.push(full + ' / ' + WEEKS); c.push('#ffffff'); n.push('');
-    phaseFull.forEach(f => { v.push(f === 4 ? 'Complete' : f + ' / 4'); c.push(f === 4 ? '#bbf7d0' : '#ffffff'); n.push(''); });
+    v.push(full + ' / ' + nWeeks); c.push('#ffffff'); n.push('');
+    phases.forEach(ph => { const f = phaseFull[ph] || 0, len = phaseLen[ph]; v.push(f === len ? 'Complete' : f + ' / ' + len); c.push(f === len ? '#bbf7d0' : '#ffffff'); n.push(''); });
     v.push(flags ? flags + ' wk' + (flags === 1 ? '' : 's') : ''); c.push(flags ? '#fed7aa' : '#ffffff'); n.push('');
     values.push(v); colors.push(c); notes.push(n);
   });
@@ -380,7 +402,7 @@ function rebuildSummary_() {
   sum.getRange(1, 1, 1, header.length).setFontWeight('bold');
   sum.setFrozenRows(1); sum.setFrozenColumns(1);
   sum.setColumnWidth(1, 180);
-  for (let col = 2; col <= WEEKS + 1; col++) sum.setColumnWidth(col, 56);
+  for (let col = 2; col <= nWeeks + 1; col++) sum.setColumnWidth(col, 56);
   const keyRow = values.length + 2;
   sum.getRange(keyRow, 1, 1, 1).setValue('Key: ✓ = lifts, throwing and arm care all done · 2/3 = some done · • orange = soreness · ⚠ red = PAIN (hover a cell to read where and what they wrote) · blank = no check-in. Every report is listed on the Arm reports tab.').setFontColor('#4b5563');
 }
