@@ -10,6 +10,7 @@ A 16-week pitcher off-season plan that installs like an app. Everything team-spe
 | `manifest.webmanifest` | App name, colors and icons for installing on phones |
 | `sw.js` | Lets the app open with no signal and pick up updates automatically |
 | `icons/` | Home-screen icons |
+| `coach.html` | Coach dashboard (private: needs the code from the sheet's Coach Access tab) |
 | `setup.html` | Team setup tool (keep this on your own site only) |
 | `tracking/` | Weekly check-in script for Google Sheets and its setup guide |
 
@@ -19,7 +20,7 @@ Every team runs the same app. Each team's repository holds the shared files plus
 
 | Shared: identical in every team's repo | Team only: different in each repo |
 |---|---|
-| `index.html`, `profile.html`, `faq.js`, `sw.js`, `README.md`, `tracking/` | `team.js`, `manifest.webmanifest`, `icons/` |
+| `index.html`, `profile.html`, `coach.html`, `faq.js`, `sw.js`, `README.md`, `tracking/` | `team.js`, `manifest.webmanifest`, `icons/` |
 
 `setup.html` (the new-team tool) lives in the clevelandpitching repo only.
 
