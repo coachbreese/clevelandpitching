@@ -1,7 +1,7 @@
 // Pitching app offline helper.
 // Pages and plan files always try the network first, so athletes get your newest version
 // whenever they have signal, and fall back to the saved copy when they don't.
-const CACHE = 'pitching-v12';
+const CACHE = 'pitching-v13';
 const CORE = ['./', './index.html', './profile.html', './faq.js', './team.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 

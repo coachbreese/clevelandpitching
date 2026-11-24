@@ -2219,9 +2219,12 @@
             const [rep, target] = mindRep(week);
             const wake = store('wake-time');
             const bt = wake ? bedtimeFor(wake) : null;
+            const prof = typeof myProfile === 'function' ? myProfile() : null;
+            const short = prof && /Under 6|6–7/.test(prof.sleep || '') ? prof.sleep.replace(' hrs', '') : '';
+            const tonight = bt ? 'Lights out by ' + bt.lights + (short ? ' (you said you get ' + short + ' hrs)' : '') : short ? 'You said ' + short + ' hrs. Aim for 8–10: set your bedtime' : 'Set your bedtime: aim for 8–10 hrs';
             return `<div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <button type="button" data-mental-go="${target}" class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/15 border border-white/30 hover:bg-white/25 text-sm"><span class="min-w-0"><span class="block text-xs font-bold uppercase tracking-wider text-team-accent">Mental rep</span>${escapeHtml(rep)}</span><i class="fa-solid fa-brain flex-shrink-0"></i></button>
-                <button type="button" data-mental-go="mental-sleep" class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/15 border border-white/30 hover:bg-white/25 text-sm"><span class="min-w-0"><span class="block text-xs font-bold uppercase tracking-wider text-team-accent">Tonight</span>${bt ? 'Lights out by ' + bt.lights : 'Set your bedtime: aim for 8–10 hrs'}</span><i class="fa-solid fa-moon flex-shrink-0"></i></button>
+                <button type="button" data-mental-go="mental-sleep" class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/15 border border-white/30 hover:bg-white/25 text-sm"><span class="min-w-0"><span class="block text-xs font-bold uppercase tracking-wider text-team-accent">Tonight</span>${escapeHtml(tonight)}</span><i class="fa-solid fa-moon flex-shrink-0"></i></button>
             </div>`;
         }
         (function mentalTab() {
@@ -2315,6 +2318,106 @@
                 return `<li><button type="button" ${attr} class="flex items-center justify-between gap-3 w-full text-left px-3 py-2.5 rounded-lg bg-white/95 hover:bg-white text-sm shadow-sm">${inner}<span class="flex-shrink-0 text-xs font-bold text-team-primary whitespace-nowrap">${link.label} <i class="fa-solid fa-chevron-right text-[10px]"></i></span></button></li>`;
             }).join('');
         }
+        // --- "For you": tips on the Today card from the athlete's pitcher profile (saved on this phone by profile.html) ---
+        function myProfile() {
+            try { const p = JSON.parse(localStorage.getItem('profile-draft-v1') || 'null'); return p && Array.isArray(p.goals) && p.goals.length ? p : null; } catch { return null; }
+        }
+        const GRIP = {
+            'Changeup': 'three fingers or a circle grip, ball deep in the hand',
+            'Splitter': 'index and middle fingers spread outside the seams',
+            'Curveball': 'middle finger along a seam, pull down out front',
+            'Slider': 'grip slightly off-center, fingers toward the outer half',
+            'Cutter': 'fastball grip shifted a little to the outside'
+        };
+        function dayContext(day, week) {
+            const head = day ? stripHtml(day.tasks[0]).toLowerCase() : '';
+            const all = day ? day.tasks.map(stripHtml).join(' ').toLowerCase() : '';
+            const phase = Math.min(4, Math.max(1, Math.ceil((week || 1) / 4)));
+            return {
+                phase, week: week || 0,
+                rest: /rest|off/.test(head),
+                throwDay: /catch|long toss|flat ground|pen|pre-game/.test(head),
+                liftDay: /lift/.test(head),
+                lowerLift: /lower|total/.test(head) && /lift/.test(head),
+                pullDowns: /pull down/.test(all),
+                medBall: /med ball/.test(all),
+                armCare: /j-band|arm care/.test(all)
+            };
+        }
+        function tipsFor(p, c) {
+            const out = [], CN = window.TEAM.coachName || 'Coach';
+            const add = (prio, icon, tag, text, link, tone) => out.push({ prio, icon, tag, text, link, tone });
+            // Safety first
+            if (p.painNow === 'Yes') add(0, 'fa-triangle-exclamation', 'Your arm', 'You said something hurts when you throw. No throwing until you\'ve talked to ' + CN + '.', { checkinArm: true }, 'red');
+            const where = (p.armWhere || []).join(' ').toLowerCase();
+            const history = /pain that|doctor/i.test(p.arm || '') || /elbow|shoulder|forearm/.test(where);
+            if (history && !c.rest && (c.throwDay || c.armCare)) {
+                if (/elbow|forearm/.test(where)) add(1, 'fa-shield-heart', 'Arm health', 'Elbow history: after J-Bands, add wrist curls and forearm twists, 2 × 15 each with a light weight.', { jump: 'band-routine' });
+                else if (/shoulder/.test(where)) add(1, 'fa-shield-heart', 'Arm health', 'Shoulder history: after J-Bands, add side-lying external rotations, 2 × 12 each arm.', { jump: 'band-routine' });
+                else add(1, 'fa-shield-heart', 'Arm health', 'With your arm history, warm up an extra 5 minutes before you throw.', null);
+            }
+            if (c.liftDay && (p.gym || []).includes('No gym access')) add(1.5, 'fa-house', 'No gym', 'No gym? Do the bodyweight version: split squats, push-ups and backpack goblet squats.', { tab: 'training' });
+            // Goals, in the order the athlete picked them
+            const offspeed = (p.pitches || []).find(x => !/fastball|sinker/i.test(x)) || p.best || 'off-speed';
+            const np = p.newPitch && p.newPitch !== 'Not sure' ? p.newPitch : '';
+            const goalTip = {
+                'Throw harder': () => c.medBall && !c.throwDay ? 'Throw the med balls with max intent today. That\'s speed training.'
+                    : c.liftDay ? (c.lowerLift ? 'Your legs make your speed. Make today\'s lower-body lifts your best reps.' : 'A strong upper back protects a fast arm. Don\'t rush the rows.')
+                    : c.throwDay && c.pullDowns ? 'On pull-downs, throw with full intent, but stay on the plan\'s throw count.'
+                    : c.throwDay && c.phase >= 4 ? 'Full intent on your fastballs today, but stop and reset if your mechanics start to break down.'
+                    : c.throwDay && c.phase === 3 ? 'Long, loose throws stretch out your arm. That\'s the base your speed is built on.'
+                    : c.throwDay ? 'Light catch only. The speed work comes later in the plan; don\'t force it.' : null,
+                'Throw more strikes': () => c.throwDay ? 'Pick a tiny target on every throw (a knee, a logo) and count how many you hit.'
+                    : !c.rest ? 'Do 10 dry stride-and-freeze reps tonight. Land on the same line every time.' : null,
+                'Add a new pitch': () => {
+                    if (!np) return 'Ask ' + CN + ' which new pitch fits you best.';
+                    const grip = GRIP[np] ? ' (' + GRIP[np] + ')' : '';
+                    if (!c.throwDay || c.phase === 1) return np + ': hold the grip while you watch TV' + grip + '. Make it feel normal in your hand.';
+                    if (/Changeup|Splitter/.test(np)) return np + ': end catch play with 5 to 10 at short distance, same arm speed as your fastball.';
+                    return np + ': practice the grip and release without throwing it for now. Breaking balls come later in the plan, when ' + CN + ' says.';
+                },
+                'Sharpen my off-speed': () => c.throwDay && c.phase >= 2 ? 'Finish catch play with 5 to 10 ' + offspeed.toLowerCase() + 's at short distance, fastball arm speed.'
+                    : !c.rest ? 'Two minutes of grip and dry-release reps with your ' + offspeed.toLowerCase() + '.' : null,
+                'Repeat my mechanics': () => c.throwDay ? 'Same tempo on every throw. Film 5 from the side if you can.'
+                    : !c.rest ? '10 balance-point holds and 10 dry towel reps in front of a mirror.' : null,
+                'Get stronger / add size': () => c.liftDay ? 'Eat protein and carbs within an hour after lifting, and add a shake tonight.' : 'Hit your protein at every meal today and have a snack before bed.',
+                'Stay healthy': () => c.rest ? 'Recovery counts. Stretch for 10 minutes and get 9 hours of sleep tonight.' : 'Never skip J-Bands, and be honest about soreness in your check-in.',
+                'Go deeper into games': () => c.throwDay ? 'Stamina comes from never missing a day. Finish every throw on the plan, no extras.'
+                    : c.liftDay ? 'Finish today with 6 × 20-yard sprints, walking back between each.' : null,
+                'Hold runners / pickoffs': () => c.throwDay && c.phase === 4 ? 'After catch play, add 3 to 5 easy pickoff throws to a partner.'
+                    : !c.rest ? '10 dry slide-steps and 10 pickoff moves to first in front of a mirror.' : null,
+                'Field my position': () => !c.rest ? 'Finish your delivery in a fielding stance, glove up. Then 10 dry comebacker reps.' : null,
+                'Mental game': () => c.throwDay ? 'Do your full release, reset, refocus between every throw today.' : 'Double today\'s breathing: 10 minutes instead of 5.',
+                'Earn a bigger role': () => 'Coaches notice who never misses. Finish every day this week and send your check-in.'
+            };
+            const goalIcon = { 'Throw harder': 'fa-gauge-high', 'Throw more strikes': 'fa-bullseye', 'Add a new pitch': 'fa-baseball', 'Sharpen my off-speed': 'fa-baseball', 'Repeat my mechanics': 'fa-repeat', 'Get stronger / add size': 'fa-dumbbell', 'Stay healthy': 'fa-shield-heart', 'Go deeper into games': 'fa-stopwatch', 'Hold runners / pickoffs': 'fa-person-running', 'Field my position': 'fa-hand', 'Mental game': 'fa-brain', 'Earn a bigger role': 'fa-arrow-trend-up' };
+            const goalLink = { 'Mental game': { mental: 'mental-wave' }, 'Get stronger / add size': { tab: 'nutrition' }, 'Repeat my mechanics': { tab: 'throwing' }, 'Earn a bigger role': window.TEAM.trackingUrl && c.week ? { checkin: true } : null };
+            const goals = (p.goals || []).slice();
+            const n = Math.floor(Date.now() / 86400000);
+            for (let i = 0; i < goals.length; i++) {
+                const g = goals[(i + n) % goals.length];
+                const f = goalTip[g]; const text = f && f();
+                if (text) add(2 + i / 10, goalIcon[g] || 'fa-star', g === 'Add a new pitch' && np ? 'New pitch' : g, text, goalLink[g] || null);
+            }
+            const sport = (p.sports || []).find(s => s && s !== 'None');
+            if (sport && c.liftDay) add(3, 'fa-basketball', 'Two sports', (sport === 'Other' ? 'In season for another sport?' : 'In season for ' + sport.toLowerCase() + '?') + ' On game days, swap today\'s lift for mobility and arm care.', null);
+            out.sort((a, b) => a.prio - b.prio);
+            return out.slice(0, 2);
+        }
+        function forYouHtml(day, week) {
+            const p = myProfile(); if (!p) return '';
+            const tips = tipsFor(p, dayContext(day, week));
+            if (!tips.length) return '';
+            const row = t => {
+                const red = t.tone === 'red';
+                const cls = 'flex items-start gap-3 w-full text-left px-3 py-2.5 rounded-lg text-sm ' + (red ? 'bg-red-50 text-red-900 border border-red-200' : 'bg-white/95 text-gray-800');
+                const inner = `<i class="fa-solid ${t.icon} mt-0.5 flex-shrink-0 ${red ? 'text-red-600' : 'text-team-primary'}"></i><span class="min-w-0"><span class="block text-xs font-bold uppercase tracking-wider ${red ? 'text-red-700' : 'text-team-primary'}">${escapeHtml(t.tag)}</span>${escapeHtml(t.text)}</span>`;
+                const l = t.link;
+                const attr = !l ? '' : l.checkinArm ? `data-checkin-arm="${week || 1}"` : l.checkin ? `data-checkin="${week || 1}"` : l.jump ? `data-jump="${l.jump}"` : l.tab ? `data-tab-go="${l.tab}"` : l.mental ? `data-mental-go="${l.mental}"` : '';
+                return attr ? `<li><button type="button" ${attr} class="${cls} hover:bg-white">${inner}<i class="fa-solid fa-chevron-right text-[10px] ml-auto self-center ${red ? 'text-red-600' : 'text-team-primary'}"></i></button></li>` : `<li class="${cls}">${inner}</li>`;
+            };
+            return `<div class="mt-3"><div class="flex items-center justify-between gap-2"><p class="text-xs uppercase tracking-wider font-bold text-team-accentonprimary"><i class="fa-solid fa-user-check mr-1"></i>For you</p><a href="profile.html" class="text-xs font-semibold underline opacity-90 hover:opacity-100">From your profile · edit</a></div><ul class="mt-2 space-y-2">${tips.map(row).join('')}</ul></div>`;
+        }
         (function seasonUI() {
             const ban = document.getElementById('season-banner');
             if (!SEASON || !ban) return;
@@ -2338,6 +2441,7 @@
                         <span class="text-xs font-bold bg-white/15 border border-white/30 px-2.5 py-1 rounded-full whitespace-nowrap">Week ${SEASON.week} of 16 · ${escapeHtml(wk.phase)}</span>
                     </div>
                     ${rest ? `<p class="mt-3 text-sm opacity-90">Rest day. Recover, eat well and get to bed early.</p>` : `<ul class="mt-3 space-y-2">${todayTasksHtml(day)}</ul>`}
+                    ${forYouHtml(day, SEASON.week)}
                     ${mindRowHtml(SEASON.week)}
                     ${tDay ? `<p class="mt-3 text-sm opacity-90"><span class="font-bold text-team-accent">Tomorrow:</span> ${escapeHtml(stripHtml(tDay.tasks[0]))}</p>` : ''}
                     <div class="flex flex-wrap gap-2 mt-4"><button type="button" data-week-open="${SEASON.week}" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>Full week</button>${checkBtn}</div>
@@ -2351,6 +2455,7 @@
                     <p class="mt-1 text-sm opacity-90">Week 1 is Rest &amp; Foundation: no throwing. Here's your first day:</p>
                     <p class="mt-3 font-bold">${escapeHtml(stripHtml(day.tasks[0]))}</p>
                     <ul class="mt-2 space-y-2">${todayTasksHtml(day)}</ul>
+                    ${forYouHtml(day, 1)}
                     <p class="mt-4 text-xs uppercase tracking-wider font-bold text-team-accent">Start now</p>
                     ${mindRowHtml(1)}
                     <div class="flex flex-wrap gap-2 mt-4"><button type="button" data-week-open="1" class="bg-team-accent text-team-onaccent font-bold text-sm px-4 py-2 rounded-lg shadow hover:brightness-95"><i class="fa-solid fa-calendar-day mr-1"></i>Preview Week 1</button></div>
